@@ -33,7 +33,7 @@ Supports **batch processing, multiple output formats, resizing, background custo
 
 1. Clone the repository:  
    ```bash
-   git clone https://github.com/YourAccount/Advanced-Image-Converter.git
+   git clone https://github.com/Sid-1996/Advanced-Image-Converter.git
 Open index v2.html directly in your browser (or deploy via GitHub Pages / local server).
 
 Drag & drop images, select from file picker, or use Ctrl+V to paste.
