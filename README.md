@@ -1,2 +1,30 @@
-# Advanced-Image-Converter
-A professional browser-based image converter with batch processing, multi-format output (ICO, PNG, WebP), scaling options, and customizable backgrounds. 100% client-side, privacy-friendly. 專業圖片轉換工具，支援批次處理、多格式輸出 (ICO/PNG/WebP)、多種縮放與背景設定，完全在瀏覽器執行，保障隱私。
+# 🎨 Advanced Image Converter
+
+一個基於 **純前端 (HTML + JavaScript + TailwindCSS)** 的圖片轉換工具，無需安裝軟體，完全在瀏覽器中執行，保障隱私。  
+支援 **批次處理、多格式輸出、尺寸調整、自訂背景** 等功能，非常適合設計師、開發者與需要快速製作圖示的人使用。
+
+## ✨ 功能特色
+
+- 🚀 **完全前端執行**：所有運算皆在瀏覽器完成，圖片不會上傳到伺服器，保護隱私。  
+- 📦 **支援多種格式**：JPG、PNG、WebP、SVG 輸入，輸出 ICO、PNG、WebP。  
+- 🖼️ **批次處理**：可同時載入多張圖片，自動逐一轉換。  
+- 📋 **快速貼上**：支援 **Ctrl+V** 直接從剪貼簿貼上圖片。  
+- 🎚️ **多種縮放方式**：`等比縮放(完整顯示)`、`等比縮放(填滿裁切)`、`拉伸填滿`、`置中不縮放`。  
+- 🎨 **背景處理**：透明背景 / 白色背景 / 自訂顏色。  
+- 🔧 **尺寸選擇**：支援 16×16、32×32、48×48、64×64、128×128、256×256 等常用圖示大小。  
+- 🏷️ **檔名設定**：可自訂檔名，並選擇是否自動附加尺寸資訊。  
+- 🌙 **深色模式**：支援 **Dark Mode**，可手動切換或記錄上次設定。  
+- 📥 **即時下載**：每張圖片會生成專屬下載按鈕，無需壓縮包，隨轉隨下。  
+
+## 🛠 技術架構
+
+- **前端框架**：純 HTML + JavaScript  
+- **樣式**：TailwindCSS (CDN 載入)  
+- **壓縮打包**：JSZip (支援多檔案打包下載)  
+- **Canvas API**：進行圖片縮放、轉換與格式輸出  
+
+## 🚀 使用方式
+
+1. 下載或 clone 本專案  
+   ```bash
+   git clone https://github.com/Sid-1996/Advanced-Image-Converter.git
