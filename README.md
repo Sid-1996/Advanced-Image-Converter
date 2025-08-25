@@ -27,7 +27,7 @@
 
 1. 下載或 clone 本專案  
    ```bash
-   git clone https://github.com/你的帳號/Advanced-Image-Converter.git
+   git clone https://github.com/Sid-1996/Advanced-Image-Converter.git
 2.開啟 index v2.html（可直接用瀏覽器打開，或放到 GitHub Pages / 本地伺服器）。
 
 3.拖曳圖片到上傳區、點選選擇檔案，或直接 Ctrl+V 貼上剪貼簿圖片。
