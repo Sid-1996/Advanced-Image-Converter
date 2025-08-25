@@ -116,7 +116,7 @@
                         <div class="text-lg font-bold text-blue-600 dark:text-blue-400" id="totalVisits">載入中...</div>
                     </div>
                     <div class="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-md">
-                        <span class="text-gray-500 dark:text-gray-400">今日轉換</span>
+                        <span class="text-gray-500 dark:text-gray-400">總轉換次數</span>
                         <div class="text-lg font-bold text-green-600 dark:text-green-400" id="todayConversions">載入中...</div>
                     </div>
                     <div class="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-md">
@@ -325,7 +325,7 @@
                 <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-3">📊 數據追蹤服務</h3>
                 <div class="text-sm text-blue-700 dark:text-blue-300 space-y-2">
                     <p>✅ <strong>Google Analytics</strong> - 詳細使用行為分析</p>
-                    <p>✅ <strong>CountAPI</strong> - 即時訪問計數器（免費服務）</p>
+                    <p>✅ <strong>CounterAPI</strong> - 專業即時計數服務（免費可靠）</p>
                     <p>🔒 您的隱私受到保護：不會收集個人資料或圖片內容</p>
                     <p class="text-xs text-blue-600 dark:text-blue-400 mt-3">
                         💡 所有圖片處理都在您的瀏覽器中進行，不會上傳到任何服務器
@@ -349,11 +349,12 @@
             }
         }
 
-        // Usage Counter Service using CountAPI (Free)
+        // Usage Counter Service using CounterAPI (Free & Reliable)
         class UsageCounter {
             constructor() {
-                this.baseUrl = 'https://api.countapi.xyz';
-                this.namespace = 'image-converter-tool';
+                this.baseUrl = 'https://api.counterapi.dev/v1';
+                this.namespace = 'sid-1996';
+                this.mainCounter = 'advanced-image-converter';
                 
                 // Initialize counters
                 this.initializeCounters();
@@ -362,92 +363,95 @@
             async initializeCounters() {
                 try {
                     // Initialize page visit counter
-                    const totalVisits = await this.incrementCounter('total-visits');
+                    const totalVisits = await this.incrementMainCounter();
                     if (totalVisits !== null) {
                         this.updateCounterDisplay('totalVisits', totalVisits);
                     }
                     
-                    // Load other counters
-                    await this.loadCounters();
+                    // Load conversion counter
+                    await this.loadConversionCounter();
                     
                     // Update online users simulation
                     this.simulateOnlineUsers();
                     
                     // Update counters every 30 seconds
-                    setInterval(() => this.loadCounters(), 30000);
+                    setInterval(() => this.loadConversionCounter(), 30000);
                 } catch (error) {
                     console.log('Counter service unavailable:', error);
                     this.showFallbackCounters();
                 }
             }
 
-            async incrementCounter(key) {
+            async incrementMainCounter() {
                 try {
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
                     
-                    const response = await fetch(`${this.baseUrl}/hit/${this.namespace}/${key}`, {
+                    const response = await fetch(`${this.baseUrl}/${this.namespace}/${this.mainCounter}/up`, {
+                        method: 'POST',
                         signal: controller.signal
                     });
                     clearTimeout(timeoutId);
                     
                     if (!response.ok) throw new Error('Network response was not ok');
                     const data = await response.json();
-                    return data.value;
+                    return data.count;
                 } catch (error) {
                     console.log('Counter increment failed:', error.message);
                     return null;
                 }
             }
 
-            async getCounter(key) {
+            async getMainCounter() {
                 try {
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
                     
-                    const response = await fetch(`${this.baseUrl}/get/${this.namespace}/${key}`, {
+                    const response = await fetch(`${this.baseUrl}/${this.namespace}/${this.mainCounter}`, {
                         signal: controller.signal
                     });
                     clearTimeout(timeoutId);
                     
                     if (!response.ok) throw new Error('Network response was not ok');
                     const data = await response.json();
-                    return data.value;
+                    return data.count;
                 } catch (error) {
                     console.log('Counter get failed:', error.message);
                     return null;
                 }
             }
 
-            async loadCounters() {
+            async loadConversionCounter() {
                 try {
-                    // Total visits
-                    const totalVisits = await this.getCounter('total-visits');
-                    if (totalVisits !== null) {
-                        this.updateCounterDisplay('totalVisits', totalVisits);
+                    // Use a separate counter for conversions
+                    const conversionCounterName = `${this.mainCounter}-conversions`;
+                    const response = await fetch(`${this.baseUrl}/${this.namespace}/${conversionCounterName}`);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.updateCounterDisplay('todayConversions', data.count);
                     } else {
-                        document.getElementById('totalVisits').textContent = '載入失敗';
-                    }
-
-                    // Today's conversions
-                    const todayKey = `conversions-${new Date().toISOString().split('T')[0]}`;
-                    const todayConversions = await this.getCounter(todayKey);
-                    if (todayConversions !== null) {
-                        this.updateCounterDisplay('todayConversions', todayConversions);
-                    } else {
-                        document.getElementById('todayConversions').textContent = '載入失敗';
+                        document.getElementById('todayConversions').textContent = '0';
                     }
                 } catch (error) {
-                    console.log('Failed to load counters:', error);
-                    this.showFallbackCounters();
+                    console.log('Failed to load conversion counter:', error);
+                    document.getElementById('todayConversions').textContent = '載入失敗';
                 }
             }
 
             async recordConversion() {
-                const todayKey = `conversions-${new Date().toISOString().split('T')[0]}`;
-                const count = await this.incrementCounter(todayKey);
-                if (count !== null) {
-                    this.updateCounterDisplay('todayConversions', count);
+                try {
+                    const conversionCounterName = `${this.mainCounter}-conversions`;
+                    const response = await fetch(`${this.baseUrl}/${this.namespace}/${conversionCounterName}/up`, {
+                        method: 'POST'
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.updateCounterDisplay('todayConversions', data.count);
+                    }
+                } catch (error) {
+                    console.log('Failed to record conversion:', error);
                 }
             }
 
@@ -1224,5 +1228,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974c4acb8495844b',t:'MTc1NjEzNzUyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974cafff60bd8085',t:'MTc1NjE0MTY2NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
