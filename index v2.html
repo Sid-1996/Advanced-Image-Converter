@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專業圖片轉換工具 - 批次處理 & 多格式輸出</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .upload-zone {
+            border: 2px dashed #cbd5e1;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .upload-zone.dragover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+            transform: scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .dark .upload-zone.dragover {
+            background-color: #1e3a8a;
+            border-color: #60a5fa;
+        }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 12px;
+        }
+        .size-radio:checked + label,
+        .format-radio:checked + label {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .dark .size-radio:checked + label,
+        .dark .format-radio:checked + label {
+            background-color: #60a5fa;
+            color: #1f2937;
+            border-color: #60a5fa;
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        .image-card {
+            transition: all 0.3s ease;
+        }
+        .image-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-900 min-h-screen transition-colors duration-300">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header with Dark Mode Toggle -->
+        <div class="flex justify-between items-center mb-8">
+            <div class="text-center flex-1">
+                <h1 class="text-4xl font-bold text-gray-800 dark:text-white mb-2">🎨 專業圖片轉換工具</h1>
+                <p class="text-gray-600 dark:text-gray-300 text-lg">批次處理 • 多格式輸出 • <span class="font-semibold text-blue-600 dark:text-blue-400">Ctrl+V 複製貼上</span></p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">✨ 完全在瀏覽器執行，保護您的隱私</p>
+            </div>
+            <button id="darkModeToggle" class="p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 text-2xl">
+                <span class="dark:hidden">🌙</span>
+                <span class="hidden dark:inline">☀️</span>
+            </button>
+        </div>
+
+        <!-- Upload Zone -->
+        <div id="uploadZone" class="upload-zone bg-white dark:bg-gray-800 rounded-xl p-12 text-center mb-8 cursor-pointer shadow-lg">
+            <div id="uploadContent">
+                <div class="text-6xl mb-4 animate-bounce-slow">📁</div>
+                <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">拖放圖片至此</h3>
+                <p class="text-gray-500 dark:text-gray-400 mb-4">支援多檔案批次上傳 • 或點選此處選擇檔案</p>
+                <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-4">
+                    <p class="text-blue-700 dark:text-blue-300 font-medium">💡 小技巧：直接按 <kbd class="bg-blue-200 dark:bg-blue-700 px-2 py-1 rounded text-sm">Ctrl+V</kbd> 貼上剪貼簿中的圖片！</p>
+                    <p class="text-blue-600 dark:text-blue-400 text-sm mt-2">📦 支援 JPG, PNG, WebP, SVG 等格式</p>
+                </div>
+                <button class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    選擇圖片檔案
+                </button>
+            </div>
+        </div>
+
+        <!-- Batch Images Display -->
+        <div id="batchImagesSection" class="hidden mb-8">
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">已上傳的圖片 (<span id="imageCount">0</span>)</h3>
+                    <button id="clearAllBtn" class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium">
+                        🗑️ 清除全部
+                    </button>
+                </div>
+                <div id="batchImagesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
+                    <!-- Batch images will be displayed here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Settings Panel -->
+        <div id="settingsPanel" class="hidden bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-6">⚙️ 轉換設定</h3>
+            
+            <!-- Output Format Selection -->
+            <div class="mb-6">
+                <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">輸出格式</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div>
+                        <input type="radio" id="formatICO" class="format-radio hidden" name="outputFormat" value="ico" checked>
+                        <label for="formatICO" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
+                            📄 ICO
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" id="formatPNG" class="format-radio hidden" name="outputFormat" value="png">
+                        <label for="formatPNG" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
+                            🖼️ PNG
+                        </label>
+                    </div>
+
+                    <div>
+                        <input type="radio" id="formatWebP" class="format-radio hidden" name="outputFormat" value="webp">
+                        <label for="formatWebP" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
+                            🚀 WebP
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Size Selection -->
+            <div class="mb-6">
+                <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">選擇尺寸</h4>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <div>
+                        <input type="radio" id="size16" class="size-radio hidden" name="iconSize" value="16">
+                        <label for="size16" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
+                            16×16
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" id="size32" class="size-radio hidden" name="iconSize" value="32" checked>
+                        <label for="size32" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
+                            32×32
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" id="size48" class="size-radio hidden" name="iconSize" value="48">
+                        <label for="size48" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
+                            48×48
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" id="size64" class="size-radio hidden" name="iconSize" value="64">
+                        <label for="size64" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
+                            64×64
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" id="size128" class="size-radio hidden" name="iconSize" value="128">
+                        <label for="size128" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
+                            128×128
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" id="size256" class="size-radio hidden" name="iconSize" value="256">
+                        <label for="size256" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
+                            256×256
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Background & Quality Settings -->
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <!-- Background Settings -->
+                <div>
+                    <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">背景處理</h4>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="background" value="transparent" checked class="mr-2">
+                            <span class="text-gray-700 dark:text-gray-300">保留透明背景</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="background" value="white" class="mr-2">
+                            <span class="text-gray-700 dark:text-gray-300">白色背景</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="background" value="custom" class="mr-2">
+                            <span class="text-gray-700 dark:text-gray-300">自訂顏色：</span>
+                            <input type="color" id="customBgColor" value="#ffffff" class="ml-2 w-8 h-8 rounded border">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Scaling Method -->
+                <div>
+                    <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">縮放方式</h4>
+                    <select id="scalingMethod" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        <option value="contain">等比縮放（完整顯示）</option>
+                        <option value="cover">等比縮放（填滿裁切）</option>
+                        <option value="fill">拉伸填滿</option>
+                        <option value="center">置中不縮放</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- File Naming -->
+            <div class="mb-4">
+                <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">檔案命名</h4>
+                <div class="flex gap-3">
+                    <input type="text" id="customFileName" placeholder="自訂檔名（留空使用原檔名）" 
+                           class="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="addSizeToName" class="mr-2">
+                        <span class="text-gray-700 dark:text-gray-300 text-sm">檔名加入尺寸</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div id="progressSection" class="hidden mb-6">
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">處理進度</span>
+                    <span id="progressText" class="text-sm text-gray-500 dark:text-gray-400">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div id="progressBar" class="progress-bar bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
+                </div>
+                <div id="progressDetails" class="text-xs text-gray-500 dark:text-gray-400 mt-2"></div>
+            </div>
+        </div>
+
+        <!-- Download Options -->
+        <div id="downloadSection" class="hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">📥 下載選項</h3>
+                
+                <div class="mb-6">
+                    <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">下載檔案</h4>
+                    <div id="downloadButtons" class="space-y-2">
+                        <!-- Download buttons will be generated here -->
+                    </div>
+                </div>
+
+                <!-- Preview Grid -->
+                <div id="previewSection" class="mb-4">
+                    <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">預覽結果</h4>
+                    <div id="previewGrid" class="preview-grid bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                        <!-- Preview icons will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Message -->
+        <div id="statusMessage" class="hidden mt-6 p-4 rounded-lg text-center"></div>
+    </div>
+
+    <!-- Hidden File Input -->
+    <input type="file" id="fileInput" accept="image/*" multiple class="hidden">
+
+    <script>
+        class AdvancedImageConverter {
+            constructor() {
+                this.images = new Map(); // Store multiple images with unique IDs
+                this.processedResults = new Map(); // Store conversion results
+                this.currentProgress = 0;
+                this.totalProgress = 0;
+                this.initializeEventListeners();
+                this.initializeDarkMode();
+            }
+
+            initializeEventListeners() {
+                const uploadZone = document.getElementById('uploadZone');
+                const fileInput = document.getElementById('fileInput');
+
+                // Click to upload
+                uploadZone.addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', (e) => this.handleMultipleFiles(Array.from(e.target.files)));
+
+                // Drag and drop
+                uploadZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadZone.classList.add('dragover');
+                });
+
+                uploadZone.addEventListener('dragleave', () => {
+                    uploadZone.classList.remove('dragover');
+                });
+
+                uploadZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadZone.classList.remove('dragover');
+                    const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+                    if (files.length > 0) {
+                        this.handleMultipleFiles(files);
+                    }
+                });
+
+                // Paste from clipboard
+                document.addEventListener('paste', (e) => {
+                    const items = e.clipboardData.items;
+                    for (let item of items) {
+                        if (item.type.startsWith('image/')) {
+                            const file = item.getAsFile();
+                            this.handleMultipleFiles([file]);
+                            break;
+                        }
+                    }
+                });
+
+                // Settings change listeners with debounce
+                this.debounceTimer = null;
+                const debouncedUpdate = () => {
+                    clearTimeout(this.debounceTimer);
+                    this.debounceTimer = setTimeout(() => this.updatePreview(), 300);
+                };
+
+                document.querySelectorAll('.size-radio, .format-radio').forEach(radio => {
+                    radio.addEventListener('change', debouncedUpdate);
+                });
+
+                document.querySelectorAll('input[name="background"]').forEach(radio => {
+                    radio.addEventListener('change', debouncedUpdate);
+                });
+
+                document.getElementById('scalingMethod').addEventListener('change', debouncedUpdate);
+                document.getElementById('customBgColor').addEventListener('change', debouncedUpdate);
+
+                // Clear all button
+                document.getElementById('clearAllBtn').addEventListener('click', () => this.clearAllImages());
+
+                // Download buttons are now generated dynamically
+            }
+
+            initializeDarkMode() {
+                const darkModeToggle = document.getElementById('darkModeToggle');
+                const isDark = localStorage.getItem('darkMode') === 'true';
+                
+                if (isDark) {
+                    document.documentElement.classList.add('dark');
+                }
+
+                darkModeToggle.addEventListener('click', () => {
+                    document.documentElement.classList.toggle('dark');
+                    const isDarkMode = document.documentElement.classList.contains('dark');
+                    localStorage.setItem('darkMode', isDarkMode);
+                });
+            }
+
+            async handleMultipleFiles(files) {
+                const validFiles = files.filter(file => file.type.startsWith('image/'));
+                
+                if (validFiles.length === 0) {
+                    this.showStatus('請選擇有效的圖片檔案', 'error');
+                    return;
+                }
+
+                this.showStatus(`正在載入 ${validFiles.length} 個檔案...`, 'info');
+                
+                for (const file of validFiles) {
+                    await this.addImageToCollection(file);
+                }
+
+                this.updateImageDisplay();
+                this.showSettingsPanel();
+                this.showStatus(`成功載入 ${validFiles.length} 個圖片檔案！`, 'success');
+            }
+
+            async addImageToCollection(file) {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const imageId = Date.now() + Math.random();
+                            this.images.set(imageId, {
+                                id: imageId,
+                                file: file,
+                                image: img,
+                                name: file.name.split('.')[0],
+                                originalName: file.name
+                            });
+                            resolve();
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            updateImageDisplay() {
+                const batchSection = document.getElementById('batchImagesSection');
+                const imagesList = document.getElementById('batchImagesList');
+                const imageCount = document.getElementById('imageCount');
+
+                if (this.images.size === 0) {
+                    batchSection.classList.add('hidden');
+                    return;
+                }
+
+                batchSection.classList.remove('hidden');
+                imageCount.textContent = this.images.size;
+                imagesList.innerHTML = '';
+
+                this.images.forEach((imageData, id) => {
+                    const imageCard = document.createElement('div');
+                    imageCard.className = 'image-card bg-gray-50 dark:bg-gray-700 rounded-lg p-4 slide-in';
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'text-sm font-medium text-gray-700 dark:text-gray-300 truncate';
+                    nameSpan.textContent = imageData.name;
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'text-red-500 hover:text-red-700 text-sm';
+                    removeBtn.textContent = '❌';
+                    removeBtn.onclick = () => this.removeImage(id);
+                    
+                    const headerDiv = document.createElement('div');
+                    headerDiv.className = 'flex items-center justify-between mb-2';
+                    headerDiv.appendChild(nameSpan);
+                    headerDiv.appendChild(removeBtn);
+                    
+                    const img = document.createElement('img');
+                    img.src = imageData.image.src;
+                    img.alt = imageData.name;
+                    img.className = 'w-full h-full object-contain';
+                    
+                    const imgDiv = document.createElement('div');
+                    imgDiv.className = 'aspect-square bg-white dark:bg-gray-600 rounded-lg overflow-hidden mb-2';
+                    imgDiv.appendChild(img);
+                    
+                    const sizeDiv = document.createElement('div');
+                    sizeDiv.className = 'text-xs text-gray-500 dark:text-gray-400';
+                    sizeDiv.textContent = `${imageData.image.width} × ${imageData.image.height}`;
+                    
+                    imageCard.appendChild(headerDiv);
+                    imageCard.appendChild(imgDiv);
+                    imageCard.appendChild(sizeDiv);
+                    imagesList.appendChild(imageCard);
+                });
+            }
+
+            removeImage(imageId) {
+                this.images.delete(imageId);
+                this.processedResults.delete(imageId);
+                this.updateImageDisplay();
+                
+                if (this.images.size === 0) {
+                    this.hideAllPanels();
+                }
+            }
+
+            clearAllImages() {
+                this.images.clear();
+                this.processedResults.clear();
+                this.updateImageDisplay();
+                this.hideAllPanels();
+                this.showStatus('已清除所有圖片', 'info');
+            }
+
+            showSettingsPanel() {
+                document.getElementById('settingsPanel').classList.remove('hidden');
+            }
+
+            hideAllPanels() {
+                document.getElementById('batchImagesSection').classList.add('hidden');
+                document.getElementById('settingsPanel').classList.add('hidden');
+                document.getElementById('progressSection').classList.add('hidden');
+                document.getElementById('downloadSection').classList.add('hidden');
+            }
+
+            async updatePreview() {
+                if (this.images.size === 0) return;
+
+                this.showProgress();
+                await this.processAllImages();
+                this.showDownloadSection();
+                this.hideProgress();
+            }
+
+            async processAllImages() {
+                const selectedSize = document.querySelector('.size-radio:checked')?.value;
+                const selectedFormat = document.querySelector('.format-radio:checked')?.value;
+
+                if (!selectedSize || !selectedFormat) {
+                    this.showStatus('請選擇尺寸和格式', 'error');
+                    return;
+                }
+
+                this.totalProgress = this.images.size;
+                this.currentProgress = 0;
+
+                for (const [imageId, imageData] of this.images) {
+                    const size = parseInt(selectedSize);
+                    const canvas = this.createIconCanvas(imageData.image, size);
+                    
+                    let result;
+                    if (selectedFormat === 'ico') {
+                        result = await this.generateSingleICO(canvas, size);
+                    } else {
+                        result = await this.canvasToBlob(canvas, selectedFormat);
+                    }
+                    
+                    this.processedResults.set(imageId, {
+                        format: selectedFormat,
+                        size: size,
+                        data: result
+                    });
+                    
+                    this.currentProgress++;
+                    this.updateProgressBar();
+                }
+
+                await this.updatePreviewGrid();
+            }
+
+            createIconCanvas(image, size) {
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+
+                // Apply background settings
+                const bgSetting = document.querySelector('input[name="background"]:checked').value;
+                if (bgSetting === 'white') {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, size, size);
+                } else if (bgSetting === 'custom') {
+                    ctx.fillStyle = document.getElementById('customBgColor').value;
+                    ctx.fillRect(0, 0, size, size);
+                }
+
+                // Apply scaling method
+                const scalingMethod = document.getElementById('scalingMethod').value;
+                this.drawImageWithScaling(ctx, image, size, scalingMethod);
+
+                return canvas;
+            }
+
+            drawImageWithScaling(ctx, image, size, method) {
+                const imgAspect = image.width / image.height;
+                const canvasAspect = 1; // Square canvas
+                
+                let drawWidth, drawHeight, drawX, drawY;
+
+                switch (method) {
+                    case 'contain':
+                        if (imgAspect > canvasAspect) {
+                            drawWidth = size;
+                            drawHeight = size / imgAspect;
+                        } else {
+                            drawWidth = size * imgAspect;
+                            drawHeight = size;
+                        }
+                        drawX = (size - drawWidth) / 2;
+                        drawY = (size - drawHeight) / 2;
+                        break;
+                        
+                    case 'cover':
+                        if (imgAspect > canvasAspect) {
+                            drawWidth = size * imgAspect;
+                            drawHeight = size;
+                        } else {
+                            drawWidth = size;
+                            drawHeight = size / imgAspect;
+                        }
+                        drawX = (size - drawWidth) / 2;
+                        drawY = (size - drawHeight) / 2;
+                        break;
+                        
+                    case 'fill':
+                        drawWidth = size;
+                        drawHeight = size;
+                        drawX = 0;
+                        drawY = 0;
+                        break;
+                        
+                    case 'center':
+                        drawWidth = image.width;
+                        drawHeight = image.height;
+                        drawX = (size - drawWidth) / 2;
+                        drawY = (size - drawHeight) / 2;
+                        break;
+                }
+
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+            }
+
+            async canvasToBlob(canvas, format) {
+                return new Promise((resolve) => {
+                    const mimeType = format === 'webp' ? 'image/webp' : 'image/png';
+                    canvas.toBlob((blob) => {
+                        // WebP fallback for Safari
+                        if (!blob && format === 'webp') {
+                            canvas.toBlob(resolve, 'image/png', 0.9);
+                        } else {
+                            resolve(blob);
+                        }
+                    }, mimeType, 0.9);
+                });
+            }
+
+            async generateSingleICO(canvas, size) {
+                return new Promise((resolve) => {
+                    canvas.toBlob((blob) => {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            const imageData = new Uint8Array(reader.result);
+                            const icoBlob = this.buildSimpleICOFile(imageData, size);
+                            resolve(icoBlob);
+                        };
+                        reader.readAsArrayBuffer(blob);
+                    }, 'image/png');
+                });
+            }
+
+            buildSimpleICOFile(imageData, size) {
+                const headerSize = 6 + 16; // Header + one directory entry
+                const totalSize = headerSize + imageData.length;
+
+                const buffer = new ArrayBuffer(totalSize);
+                const view = new DataView(buffer);
+                const uint8View = new Uint8Array(buffer);
+                
+                // ICO header
+                view.setUint16(0, 0, true); // Reserved
+                view.setUint16(2, 1, true); // Type (1 = ICO)
+                view.setUint16(4, 1, true); // Number of images (1)
+
+                // Directory entry
+                const displaySize = size === 256 ? 0 : size; // 256 is stored as 0
+                view.setUint8(6, displaySize); // Width
+                view.setUint8(7, displaySize); // Height
+                view.setUint8(8, 0); // Color palette
+                view.setUint8(9, 0); // Reserved
+                view.setUint16(10, 1, true); // Color planes
+                view.setUint16(12, 32, true); // Bits per pixel
+                view.setUint32(14, imageData.length, true); // Image size
+                view.setUint32(18, headerSize, true); // Image offset
+
+                // Image data
+                uint8View.set(imageData, headerSize);
+
+                return new Blob([buffer], { type: 'image/x-icon' });
+            }
+
+            async updatePreviewGrid() {
+                const previewGrid = document.getElementById('previewGrid');
+                previewGrid.innerHTML = '';
+
+                // Show preview for first image as sample
+                if (this.images.size > 0) {
+                    const firstImage = this.images.values().next().value;
+                    const firstResult = this.processedResults.get(firstImage.id);
+
+                    if (firstResult) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'text-center';
+                        previewItem.innerHTML = `
+                            <div class="bg-white dark:bg-gray-600 p-2 rounded-lg shadow-sm border dark:border-gray-500">
+                                <canvas width="${firstResult.size}" height="${firstResult.size}" class="mx-auto" style="max-width: ${Math.min(firstResult.size, 64)}px; max-height: ${Math.min(firstResult.size, 64)}px; image-rendering: pixelated;"></canvas>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${firstResult.size}×${firstResult.size} ${firstResult.format.toUpperCase()}</p>
+                            </div>
+                        `;
+                        
+                        const previewCanvas = previewItem.querySelector('canvas');
+                        const ctx = previewCanvas.getContext('2d');
+                        
+                        // Create a temporary canvas from the original image for preview
+                        const tempCanvas = this.createIconCanvas(firstImage.image, firstResult.size);
+                        ctx.drawImage(tempCanvas, 0, 0);
+                        
+                        previewGrid.appendChild(previewItem);
+                    }
+                }
+            }
+
+
+
+            showProgress() {
+                document.getElementById('progressSection').classList.remove('hidden');
+                this.updateProgressBar();
+            }
+
+            hideProgress() {
+                document.getElementById('progressSection').classList.add('hidden');
+            }
+
+            updateProgressBar() {
+                const percentage = this.totalProgress > 0 ? Math.round((this.currentProgress / this.totalProgress) * 100) : 0;
+                document.getElementById('progressBar').style.width = `${percentage}%`;
+                document.getElementById('progressText').textContent = `${percentage}%`;
+                document.getElementById('progressDetails').textContent = 
+                    `處理中 ${this.currentProgress} / ${this.totalProgress} 項目`;
+            }
+
+            showDownloadSection() {
+                document.getElementById('downloadSection').classList.remove('hidden');
+                this.generateDownloadButtons();
+            }
+
+            generateDownloadButtons() {
+                const downloadButtons = document.getElementById('downloadButtons');
+                downloadButtons.innerHTML = '';
+
+                // Generate individual download buttons for each image
+                this.images.forEach((imageData, imageId) => {
+                    const result = this.processedResults.get(imageId);
+                    if (result) {
+                        const button = document.createElement('button');
+                        const formatInfo = {
+                            ico: { emoji: '📦', name: 'ICO', color: 'blue' },
+                            png: { emoji: '🖼️', name: 'PNG', color: 'green' },
+                            webp: { emoji: '🚀', name: 'WebP', color: 'orange' }
+                        };
+                        
+                        const info = formatInfo[result.format];
+                        button.className = `w-full bg-${info.color}-600 hover:bg-${info.color}-700 dark:bg-${info.color}-500 dark:hover:bg-${info.color}-600 text-white px-4 py-2 rounded-lg font-medium transition-colors mb-2`;
+                        button.textContent = `${info.emoji} 下載 ${imageData.name} (${result.size}×${result.size} ${result.format.toUpperCase()})`;
+                        button.onclick = () => this.downloadSingleImage(imageId);
+                        downloadButtons.appendChild(button);
+                    }
+                });
+            }
+
+            async downloadSingleImage(imageId) {
+                const imageData = this.images.get(imageId);
+                const result = this.processedResults.get(imageId);
+                
+                if (!result) {
+                    this.showStatus('請先處理圖片', 'error');
+                    return;
+                }
+
+                const customName = document.getElementById('customFileName').value;
+                const baseName = this.sanitizeFilename(customName || imageData.name);
+                const addSize = document.getElementById('addSizeToName').checked;
+                
+                let fileName;
+                if (addSize) {
+                    fileName = `${baseName}_${result.size}x${result.size}.${result.format}`;
+                } else {
+                    fileName = `${baseName}.${result.format}`;
+                }
+
+                this.downloadBlob(result.data, fileName);
+                this.showStatus(`已下載 ${fileName}`, 'success');
+            }
+
+            sanitizeFilename(filename) {
+                // Remove or replace invalid characters for Windows/Mac
+                return filename.replace(/[\\/:*?"<>|]/g, '_').trim();
+            }
+
+
+
+            async startConversion() {
+                const convertButton = document.getElementById('convertButton');
+                const originalText = convertButton.textContent;
+                
+                // Show loading state
+                convertButton.disabled = true;
+                convertButton.textContent = '⏳ 轉換中...';
+                convertButton.className = convertButton.className.replace('hover:scale-105', '');
+                
+                try {
+                    await this.updatePreview();
+                    
+                    // Show success state
+                    convertButton.textContent = '✅ 轉換完成！';
+                    convertButton.className = convertButton.className.replace('bg-blue-600 hover:bg-blue-700', 'bg-green-600');
+                    
+                    setTimeout(() => {
+                        convertButton.disabled = false;
+                        convertButton.textContent = originalText;
+                        convertButton.className = convertButton.className.replace('bg-green-600', 'bg-blue-600 hover:bg-blue-700');
+                        convertButton.className += ' transform hover:scale-105';
+                    }, 2000);
+                    
+                } catch (error) {
+                    // Show error state
+                    convertButton.textContent = '❌ 轉換失敗';
+                    convertButton.className = convertButton.className.replace('bg-blue-600 hover:bg-blue-700', 'bg-red-600');
+                    
+                    setTimeout(() => {
+                        convertButton.disabled = false;
+                        convertButton.textContent = originalText;
+                        convertButton.className = convertButton.className.replace('bg-red-600', 'bg-blue-600 hover:bg-blue-700');
+                        convertButton.className += ' transform hover:scale-105';
+                    }, 2000);
+                }
+            }
+
+            downloadBlob(blob, filename) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            showStatus(message, type) {
+                const statusEl = document.getElementById('statusMessage');
+                statusEl.textContent = message;
+                statusEl.className = `mt-6 p-4 rounded-lg text-center ${
+                    type === 'success' ? 'bg-green-100 text-green-800' :
+                    type === 'error' ? 'bg-red-100 text-red-800' :
+                    'bg-blue-100 text-blue-800'
+                }`;
+                statusEl.classList.remove('hidden');
+                
+                if (type === 'success' || type === 'error') {
+                    setTimeout(() => {
+                        statusEl.classList.add('hidden');
+                    }, 3000);
+                }
+            }
+        }
+
+        // Global converter instance
+        let converter;
+
+        // Initialize the converter when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            converter = new AdvancedImageConverter();
+            
+            // Add process button to settings panel
+            const settingsPanel = document.getElementById('settingsPanel');
+            const processButton = document.createElement('div');
+            processButton.className = 'text-center mt-6';
+            processButton.innerHTML = `
+                <button id="convertButton" onclick="converter.startConversion()" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-lg transition-all transform hover:scale-105">
+                    🚀 開始轉換
+                </button>
+            `;
+            settingsPanel.appendChild(processButton);
+        });
+
+        // Add keyboard shortcut hint
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'v') {
+                const hint = document.createElement('div');
+                hint.textContent = '正在檢查剪貼簿...';
+                hint.className = 'fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg pulse-animation z-50';
+                document.body.appendChild(hint);
+                
+                setTimeout(() => {
+                    if (document.body.contains(hint)) {
+                        document.body.removeChild(hint);
+                    }
+                }, 2000);
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974b7be026298f0f',t:'MTc1NjEyOTA0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
