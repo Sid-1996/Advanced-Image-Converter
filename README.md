@@ -1,4 +1,4 @@
-# Advanced Image Converter
+# 圖片轉ICO工具 (免費線上轉換 • 批次處理 • PNG/JPG轉ICO圖示)
 
 一款輕量且強大的圖片轉換工具，使用 HTML、CSS 及 JavaScript 製作，無需安裝即可直接在瀏覽器中轉換圖片格式。
 
