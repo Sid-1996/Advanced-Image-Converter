@@ -15,7 +15,7 @@
     </script>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -78,10 +78,6 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
-        .counter-animate {
-            animation: counterPulse 0.5s ease-in-out;
-        }
-
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -89,11 +85,6 @@
         @keyframes slideIn {
             from { transform: translateX(-100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes counterPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
         }
         .slide-in {
             animation: slideIn 0.3s ease-out;
@@ -109,17 +100,7 @@
                 <p class="text-gray-600 dark:text-gray-300 text-lg">批次處理 • 多格式輸出 • <span class="font-semibold text-blue-600 dark:text-blue-400">Ctrl+V 複製貼上</span></p>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">✨ 完全在瀏覽器執行，保護您的隱私</p>
                 
-                <!-- Usage Counter -->
-                <div class="mt-4 flex justify-center space-x-6 text-sm">
-                    <div class="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-md">
-                        <span class="text-gray-500 dark:text-gray-400">總使用次數</span>
-                        <div class="text-lg font-bold text-blue-600 dark:text-blue-400" id="totalVisits">載入中...</div>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-md">
-                        <span class="text-gray-500 dark:text-gray-400">今日轉換</span>
-                        <div class="text-lg font-bold text-green-600 dark:text-green-400" id="todayConversions">0</div>
-                    </div>
-                </div>
+
             </div>
             <button id="darkModeToggle" class="p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 text-2xl">
                 <span class="dark:hidden">🌙</span>
@@ -315,17 +296,16 @@
             </div>
         </div>
 
-        <!-- Usage Analytics Info -->
-        <div id="analyticsSection" class="mt-8">
+        <!-- Privacy Info -->
+        <div id="privacySection" class="mt-8">
             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-xl p-6 shadow-lg border border-blue-200 dark:border-blue-700">
-                <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-3">📊 數據追蹤服務</h3>
+                <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-3">🔒 隱私保護</h3>
                 <div class="text-sm text-blue-700 dark:text-blue-300 space-y-2">
-                    <p>✅ <strong>Google Analytics</strong> - 詳細使用行為分析</p>
-                    <p>✅ <strong>CounterAPI v2</strong> - 專業即時計數服務（Workspace: advanced-image-converter）</p>
-                    <p>📈 <strong>真實使用統計</strong> - 僅在實際使用工具時計數，確保數據準確</p>
-                    <p>🔒 您的隱私受到保護：不會收集個人資料或圖片內容</p>
+                    <p>✅ <strong>Google Analytics</strong> - 僅收集匿名使用統計</p>
+                    <p>🔒 <strong>完全本地處理</strong> - 您的圖片不會上傳到任何服務器</p>
+                    <p>🛡️ <strong>隱私優先</strong> - 不收集個人資料或圖片內容</p>
                     <p class="text-xs text-blue-600 dark:text-blue-400 mt-3">
-                        💡 所有圖片處理都在您的瀏覽器中進行，不會上傳到任何服務器
+                        💡 所有圖片轉換都在您的瀏覽器中進行，確保資料安全
                     </p>
                 </div>
             </div>
@@ -346,118 +326,7 @@
             }
         }
 
-        // Usage Counter Service using CounterAPI (Free & Reliable)
-        class UsageCounter {
-            constructor() {
-                this.baseUrl = 'https://api.counterapi.dev/v2';
-                this.workspace = 'advanced-image-converter';
-                this.visitCounter = 'visits123';
-                this.hasIncrementedThisSession = false;
-                
-                // Initialize counters - only load, don't increment yet
-                this.initializeCounters();
-            }
 
-            async initializeCounters() {
-                try {
-                    // Load current visit count (don't increment on page load)
-                    await this.loadVisitCounter();
-                    
-                    // Initialize today's conversions to 0
-                    this.updateCounterDisplay('todayConversions', 0);
-                    
-                    // Update counters every 30 seconds
-                    setInterval(() => this.loadVisitCounter(), 30000);
-                } catch (error) {
-                    console.log('Counter service unavailable:', error);
-                    this.showFallbackCounters();
-                }
-            }
-
-            async incrementVisitCounter() {
-                // Only increment once per session when user actually uses the tool
-                if (this.hasIncrementedThisSession) {
-                    return;
-                }
-
-                try {
-                    const cacheBust = Date.now();
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 5000);
-                    
-                    const response = await fetch(`${this.baseUrl}/${this.workspace}/${this.visitCounter}/up?cache_bust=${cacheBust}`, {
-                        method: 'POST',
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeoutId);
-                    
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    const data = await response.json();
-                    
-                    // Use up_count from the response
-                    if (data && typeof data.up_count === 'number') {
-                        this.updateCounterDisplay('totalVisits', data.up_count);
-                        this.hasIncrementedThisSession = true;
-                    }
-                } catch (error) {
-                    console.log('Counter increment failed:', error.message);
-                }
-            }
-
-            async loadVisitCounter() {
-                try {
-                    const cacheBust = Date.now();
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 5000);
-                    
-                    const response = await fetch(`${this.baseUrl}/${this.workspace}/${this.visitCounter}?cache_bust=${cacheBust}`, {
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeoutId);
-                    
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    const data = await response.json();
-                    
-                    // Use up_count from the response
-                    if (data && typeof data.up_count === 'number') {
-                        this.updateCounterDisplay('totalVisits', data.up_count);
-                    }
-                } catch (error) {
-                    console.log('Counter load failed:', error.message);
-                    document.getElementById('totalVisits').textContent = '載入失敗';
-                }
-            }
-
-            recordConversion() {
-                // Simple local counter for conversions (resets each session)
-                const currentCount = parseInt(document.getElementById('todayConversions').textContent) || 0;
-                this.updateCounterDisplay('todayConversions', currentCount + 1);
-            }
-
-            updateCounterDisplay(elementId, value) {
-                const element = document.getElementById(elementId);
-                if (element && element.textContent !== value.toString()) {
-                    element.textContent = this.formatNumber(value);
-                    element.classList.add('counter-animate');
-                    setTimeout(() => element.classList.remove('counter-animate'), 500);
-                }
-            }
-
-            formatNumber(num) {
-                if (num >= 1000000) {
-                    return (num / 1000000).toFixed(1) + 'M';
-                } else if (num >= 1000) {
-                    return (num / 1000).toFixed(1) + 'K';
-                }
-                return num.toString();
-            }
-
-            showFallbackCounters() {
-                // Show failure message if API is unavailable
-                document.getElementById('totalVisits').textContent = '載入失敗';
-                document.getElementById('todayConversions').textContent = '0';
-            }
-        }
 
         class AdvancedImageConverter {
             constructor() {
@@ -465,7 +334,6 @@
                 this.processedResults = new Map(); // Store conversion results
                 this.currentProgress = 0;
                 this.totalProgress = 0;
-                this.usageCounter = new UsageCounter();
                 this.initializeEventListeners();
                 this.initializeDarkMode();
                 
@@ -756,18 +624,12 @@
                     this.updateProgressBar();
                 }
 
-                // Track conversion completion and update counter
+                // Track conversion completion
                 trackEvent('conversion_completed', {
                     format: selectedFormat,
                     size: selectedSize,
                     image_count: this.images.size
                 });
-
-                // Increment visit counter when user actually uses the tool
-                await this.usageCounter.incrementVisitCounter();
-                
-                // Record conversion in usage counter
-                this.usageCounter.recordConversion();
 
                 await this.updatePreviewGrid();
             }
@@ -1204,5 +1066,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975579a641418410',t:'MTc1NjIzMzgxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97558c9143028410',t:'MTc1NjIzNDU4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
