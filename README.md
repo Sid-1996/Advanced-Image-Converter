@@ -1,11 +1,11 @@
 # 🛠️ PicTool 圖片工具箱｜免費線上圖片轉換・AI去背・壓縮
 
-[![GitHub](https://img.shields.io/github/license/Sid-1996/Advanced-Image-Converter)](https://opensource.org/licenses/MIT)
-[![GitHub Pages](https://img.shields.io/badge/hosted-GitHub%20Pages-blue)](https://sid-1996.github.io/Advanced-Image-Converter/)
+[![GitHub](https://img.shields.io/github/license/Sid-1996/pictool)](https://opensource.org/licenses/MIT)
+[![GitHub Pages](https://img.shields.io/badge/hosted-GitHub%20Pages-blue)](https://sid-1996.github.io/pictool/)
 
 **PicTool** 是一款輕量級、免安裝的線上圖片工具箱，直接在瀏覽器中執行，無需上傳伺服器。提供三大核心功能：**圖片格式轉換**、**AI 自動去背**、**圖片壓縮到指定大小**。
 
-👉 **[立即使用 PicTool](https://sid-1996.github.io/Advanced-Image-Converter/)**
+👉 **[立即使用 PicTool](https://sid-1996.github.io/pictool/)**
 
 ---
 
@@ -44,7 +44,7 @@
 
 ## 🚀 使用方式
 
-1. 開啟 [PicTool 網頁版](https://sid-1996.github.io/Advanced-Image-Converter/)
+1. 開啟 [PicTool 網頁版](https://sid-1996.github.io/pictool/)
 2. 拖曳圖片或點擊上傳，也可按 `Ctrl+V` 貼上
 3. 選擇功能模式（格式轉換 / 壓縮圖片）
 4. 調整設定後點擊轉換
@@ -95,11 +95,11 @@
 
 # 🛠️ PicTool - Free Online Image Toolkit
 
-[![GitHub](https://img.shields.io/github/license/Sid-1996/Advanced-Image-Converter)](https://opensource.org/licenses/MIT)
+[![GitHub](https://img.shields.io/github/license/Sid-1996/pictool)](https://opensource.org/licenses/MIT)
 
 A lightweight, browser-based image toolkit with **format conversion**, **AI background removal**, and **image compression**. No installation, no server upload — everything runs in your browser.
 
-👉 **[Try PicTool Now](https://sid-1996.github.io/Advanced-Image-Converter/)**
+👉 **[Try PicTool Now](https://sid-1996.github.io/pictool/)**
 
 ## Features
 
