@@ -155,6 +155,16 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
+        /* Toggle switch */
+        .toggle-checkbox:checked + .toggle-label .toggle-dot {
+            transform: translateX(1.5rem);
+        }
+        .toggle-checkbox:checked + .toggle-label .toggle-bg {
+            background-color: #3b82f6;
+        }
+        .dark .toggle-checkbox:checked + .toggle-label .toggle-bg {
+            background-color: #60a5fa;
+        }
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -165,6 +175,50 @@
         }
         .slide-in {
             animation: slideIn 0.3s ease-out;
+        }
+        /* Mode tabs */
+        .mode-tab {
+            transition: all 0.3s ease;
+        }
+        .mode-tab.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .dark .mode-tab.active {
+            background-color: #60a5fa;
+            color: #1f2937;
+        }
+        .mode-tab:not(.active) {
+            color: #4b5563;
+        }
+        .dark .mode-tab:not(.active) {
+            color: #9ca3af;
+        }
+        .mode-tab:not(.active):hover {
+            background-color: #f3f4f6;
+        }
+        .dark .mode-tab:not(.active):hover {
+            background-color: #374151;
+        }
+        /* Compress format radios */
+        .compress-format-radio:checked + label {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .compress-format-radio:checked + label span {
+            color: white;
+        }
+        .dark .compress-format-radio:checked + label {
+            background-color: #60a5fa;
+            color: #1f2937;
+            border-color: #60a5fa;
+        }
+        .dark .compress-format-radio:checked + label span {
+            color: #1f2937;
         }
     </style>
 </head>
@@ -185,18 +239,28 @@
             </button>
         </div>
 
+        <!-- Mode Tabs -->
+        <div class="flex mb-6 bg-white dark:bg-gray-800 rounded-xl p-1.5 shadow-lg gap-1">
+            <button id="tabConvert" class="mode-tab active flex-1 py-3 px-4 rounded-lg font-medium text-center">
+                🔄 格式轉換
+            </button>
+            <button id="tabCompress" class="mode-tab flex-1 py-3 px-4 rounded-lg font-medium text-center">
+                📦 壓縮圖片
+            </button>
+        </div>
+
         <!-- Upload Zone -->
         <div id="uploadZone" class="upload-zone bg-white dark:bg-gray-800 rounded-xl p-12 text-center mb-8 cursor-pointer shadow-lg">
             <div id="uploadContent">
-                <div class="text-6xl mb-4 animate-bounce-slow">📁</div>
-                <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">上傳圖片轉換為ICO圖示</h3>
-                <p class="text-gray-500 dark:text-gray-400 mb-4">支援PNG、JPG、WebP等格式 • 批次轉換多個檔案</p>
+                <div id="uploadIcon" class="text-6xl mb-4 animate-bounce-slow">📁</div>
+                <h3 id="uploadTitle" class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">上傳圖片轉換為ICO圖示</h3>
+                <p id="uploadDesc" class="text-gray-500 dark:text-gray-400 mb-4">支援PNG、JPG、WebP等格式 • 批次轉換多個檔案</p>
                 <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-4">
                     <p class="text-blue-700 dark:text-blue-300 font-medium">💡 快速轉換：按 <kbd class="bg-blue-200 dark:bg-blue-700 px-2 py-1 rounded text-sm">Ctrl+V</kbd> 直接貼上圖片！</p>
-                    <p class="text-blue-600 dark:text-blue-400 text-sm mt-2">📦 輸出標準ICO格式，適用於網站圖示、應用程式圖示</p>
+                    <p id="uploadHint" class="text-blue-600 dark:text-blue-400 text-sm mt-2">📦 輸出標準ICO格式，適用於網站圖示、應用程式圖示</p>
                 </div>
-                <button class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                    選擇圖片轉ICO
+                <button id="uploadBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    選擇圖片
                 </button>
             </div>
         </div>
@@ -323,6 +387,27 @@
                 </div>
             </div>
 
+            <!-- Auto Background Removal -->
+            <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                <label class="flex items-center justify-between cursor-pointer">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-md font-medium text-gray-700 dark:text-gray-300">🎨 自動去背</span>
+                            <span class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-medium">AI</span>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">使用 AI 自動移除圖片背景，再套用下方背景設定</p>
+                    </div>
+                    <div class="relative ml-4 flex-shrink-0">
+                        <input type="checkbox" id="autoRemoveBg" class="toggle-checkbox hidden">
+                        <label for="autoRemoveBg" class="toggle-label flex items-center cursor-pointer">
+                            <div class="toggle-bg w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full shadow-inner transition-colors duration-300"></div>
+                            <div class="toggle-dot absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300"></div>
+                        </label>
+                    </div>
+                </label>
+                <div id="bgRemoveStatus" class="text-xs text-gray-500 dark:text-gray-400 mt-2 hidden"></div>
+            </div>
+
             <!-- File Naming -->
             <div class="mb-4">
                 <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">檔案命名</h4>
@@ -373,6 +458,103 @@
             </div>
         </div>
 
+        <!-- Compression Settings -->
+        <div id="compressSettings" class="hidden bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-6">⚙️ 壓縮設定</h3>
+            
+            <!-- Target Size -->
+            <div class="mb-5">
+                <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">目標大小</h4>
+                <div class="flex gap-3 items-center">
+                    <input type="number" id="compressTargetSize" value="1" min="0.1" step="0.1"
+                           class="w-32 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                    <select id="compressSizeUnit" class="p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        <option value="KB">KB</option>
+                        <option value="MB" selected>MB</option>
+                    </select>
+                    <span class="text-sm text-gray-400">壓縮到此大小內</span>
+                </div>
+            </div>
+
+            <!-- Output Format -->
+            <div class="mb-5">
+                <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">輸出格式</h4>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <input type="radio" id="cfJpeg" class="compress-format-radio hidden" name="compressFormat" value="jpeg" checked>
+                        <label for="cfJpeg" class="block text-center py-3 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
+                            JPEG <span class="text-xs block">推薦</span>
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" id="cfWebp" class="compress-format-radio hidden" name="compressFormat" value="webp">
+                        <label for="cfWebp" class="block text-center py-3 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
+                            WebP
+                        </label>
+                    </div>
+                    <div>
+                        <input type="radio" id="cfPng" class="compress-format-radio hidden" name="compressFormat" value="png">
+                        <label for="cfPng" class="block text-center py-3 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
+                            PNG
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Max Dimensions -->
+            <div class="mb-5">
+                <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">最大尺寸 <span class="text-xs text-gray-400 font-normal">（選填，先縮圖再壓縮）</span></h4>
+                <div class="flex gap-3 items-center">
+                    <input type="number" id="compressMaxWidth" placeholder="寬度" min="1"
+                           class="w-32 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 placeholder-gray-400">
+                    <span class="text-gray-400">×</span>
+                    <input type="number" id="compressMaxHeight" placeholder="高度" min="1"
+                           class="w-32 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 placeholder-gray-400">
+                    <span class="text-xs text-gray-400">px（留空不限制）</span>
+                </div>
+            </div>
+
+            <div class="text-center mt-6">
+                <button id="compressButton" class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-lg transition-all transform hover:scale-105">
+                    🚀 開始壓縮
+                </button>
+            </div>
+        </div>
+
+        <!-- Compression Result -->
+        <div id="compressResult" class="hidden bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">📊 壓縮結果</h3>
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <!-- Original -->
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">📄 原始圖片</h4>
+                    <div class="aspect-square bg-white dark:bg-gray-600 rounded-lg overflow-hidden mb-2">
+                        <img id="compressOriginalPreview" class="w-full h-full object-contain">
+                    </div>
+                    <div id="compressOriginalSize" class="text-sm text-gray-700 dark:text-gray-300"></div>
+                </div>
+                
+                <!-- Compressed -->
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">📦 壓縮後</h4>
+                    <div class="aspect-square bg-white dark:bg-gray-600 rounded-lg overflow-hidden mb-2">
+                        <img id="compressResultPreview" class="w-full h-full object-contain">
+                    </div>
+                    <div id="compressResultSize" class="text-sm text-gray-700 dark:text-gray-300"></div>
+                    <div id="compressQualityUsed" class="text-xs text-gray-400 mt-1"></div>
+                </div>
+            </div>
+
+            <div id="compressSavings" class="text-center p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg mb-4"></div>
+
+            <div class="text-center">
+                <button id="compressDownloadBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-lg transition-all">
+                    📥 下載壓縮圖片
+                </button>
+            </div>
+        </div>
+
         <!-- Privacy Info -->
         <div id="privacySection" class="mt-8">
             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-xl p-6 shadow-lg border border-blue-200 dark:border-blue-700">
@@ -411,6 +593,13 @@
                 this.processedResults = new Map(); // Store conversion results
                 this.currentProgress = 0;
                 this.totalProgress = 0;
+                this.bgRemovalLib = null;
+                this.bgRemovalLoading = false;
+                this.debackingInProgress = false;
+                this.currentMode = 'convert';
+                this.compressResultBlob = null;
+                this.compressResultQuality = null;
+                this._compressPreviewUrl = null;
                 this.initializeEventListeners();
                 this.initializeDarkMode();
                 
@@ -490,8 +679,23 @@
                 document.getElementById('customFileName').addEventListener('input', debouncedUpdate);
                 document.getElementById('addSizeToName').addEventListener('change', debouncedUpdate);
 
+                // Auto background removal toggle
+                document.getElementById('autoRemoveBg').addEventListener('change', () => {
+                    this.handleBgRemovalToggle();
+                });
+
                 // Clear all button
                 document.getElementById('clearAllBtn').addEventListener('click', () => this.clearAllImages());
+
+                // Mode tabs
+                document.getElementById('tabConvert').addEventListener('click', () => this.switchMode('convert'));
+                document.getElementById('tabCompress').addEventListener('click', () => this.switchMode('compress'));
+
+                // Compress button
+                document.getElementById('compressButton').addEventListener('click', () => this.compressCurrentImage());
+
+                // Compress download button
+                document.getElementById('compressDownloadBtn').addEventListener('click', () => this.downloadCompressedImage());
             }
 
             initializeDarkMode() {
@@ -530,13 +734,39 @@
                     file_types: [...new Set(validFiles.map(f => f.type))]
                 });
                 
+                // In compress mode, replace previous image
+                if (this.currentMode === 'compress') {
+                    this.images.clear();
+                    this.processedResults.clear();
+                    this.compressResultBlob = null;
+                    if (this._compressPreviewUrl) {
+                        URL.revokeObjectURL(this._compressPreviewUrl);
+                        this._compressPreviewUrl = null;
+                    }
+                }
+
                 for (const file of validFiles) {
                     await this.addImageToCollection(file);
                 }
 
                 this.updateImageDisplay();
-                this.showSettingsPanel();
+
+                if (this.currentMode === 'compress') {
+                    // In compress mode, show compress settings (single image)
+                    document.getElementById('compressSettings').classList.remove('hidden');
+                    document.getElementById('compressResult').classList.add('hidden');
+                    this.compressResultBlob = null;
+                } else {
+                    // In convert mode, show normal settings
+                    this.showSettingsPanel();
+                }
+
                 this.showStatus(`成功載入 ${validFiles.length} 個圖片檔案！`, 'success');
+                
+                // Auto-deback new images if toggle is already on
+                if (document.getElementById('autoRemoveBg')?.checked) {
+                    await this.startBatchDebacking();
+                }
             }
 
             async addImageToCollection(file) {
@@ -551,7 +781,9 @@
                                 file: file,
                                 image: img,
                                 name: file.name.split('.')[0],
-                                originalName: file.name
+                                originalName: file.name,
+                                debackedBlob: null,
+                                debackedImage: null
                             });
                             resolve();
                         };
@@ -578,6 +810,7 @@
                 this.images.forEach((imageData, id) => {
                     const imageCard = document.createElement('div');
                     imageCard.className = 'image-card bg-gray-50 dark:bg-gray-700 rounded-lg p-4 slide-in';
+                    imageCard.dataset.imageId = id;
                     const nameSpan = document.createElement('span');
                     nameSpan.className = 'text-sm font-medium text-gray-700 dark:text-gray-300 truncate';
                     nameSpan.textContent = imageData.name;
@@ -605,14 +838,34 @@
                     sizeDiv.className = 'text-xs text-gray-500 dark:text-gray-400';
                     sizeDiv.textContent = `${imageData.image.width} × ${imageData.image.height}`;
                     
+                    // De-back preview area (hidden by default)
+                    const debackPreview = document.createElement('div');
+                    debackPreview.className = 'deback-preview hidden mt-2';
+                    debackPreview.innerHTML = `
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">🔍 去背預覽</div>
+                        <div class="aspect-square bg-white dark:bg-gray-600 rounded-lg overflow-hidden relative">
+                            <canvas class="w-full h-full"></canvas>
+                            <div class="deback-spinner hidden absolute inset-0 flex items-center justify-center bg-black/10 dark:bg-black/30 rounded-lg">
+                                <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                        </div>
+                    `;
+                    
                     imageCard.appendChild(headerDiv);
                     imageCard.appendChild(imgDiv);
                     imageCard.appendChild(sizeDiv);
+                    imageCard.appendChild(debackPreview);
                     imagesList.appendChild(imageCard);
                 });
             }
 
             removeImage(imageId) {
+                const imageData = this.images.get(imageId);
+                if (imageData) {
+                    if (imageData.debackedBlob) {
+                        URL.revokeObjectURL(imageData.debackedImage?.src || '');
+                    }
+                }
                 this.images.delete(imageId);
                 this.processedResults.delete(imageId);
                 this.updateImageDisplay();
@@ -627,6 +880,7 @@
 
             clearAllImages() {
                 const imageCount = this.images.size;
+                this.clearDebackResults();
                 this.images.clear();
                 this.processedResults.clear();
                 this.updateImageDisplay();
@@ -639,6 +893,190 @@
                 });
             }
 
+            // ── Mode Switching ──
+            switchMode(mode) {
+                this.currentMode = mode;
+                const tabConvert = document.getElementById('tabConvert');
+                const tabCompress = document.getElementById('tabCompress');
+                tabConvert.className = mode === 'convert' ? 'mode-tab active flex-1 py-3 px-4 rounded-lg font-medium text-center' : 'mode-tab flex-1 py-3 px-4 rounded-lg font-medium text-center';
+                tabCompress.className = mode === 'compress' ? 'mode-tab active flex-1 py-3 px-4 rounded-lg font-medium text-center' : 'mode-tab flex-1 py-3 px-4 rounded-lg font-medium text-center';
+
+                // Update upload zone text
+                if (mode === 'compress') {
+                    document.getElementById('uploadIcon').textContent = '📦';
+                    document.getElementById('uploadTitle').textContent = '上傳圖片壓縮大小';
+                    document.getElementById('uploadDesc').textContent = '支援PNG、JPG、WebP等格式 • 壓縮到指定大小';
+                    document.getElementById('uploadHint').textContent = '📦 壓縮後仍保持良好畫質，適用於上傳限制的網站';
+                    document.getElementById('uploadBtn').textContent = '選擇圖片壓縮';
+                } else {
+                    document.getElementById('uploadIcon').textContent = '📁';
+                    document.getElementById('uploadTitle').textContent = '上傳圖片轉換為ICO圖示';
+                    document.getElementById('uploadDesc').textContent = '支援PNG、JPG、WebP等格式 • 批次轉換多個檔案';
+                    document.getElementById('uploadHint').textContent = '📦 輸出標準ICO格式，適用於網站圖示、應用程式圖示';
+                    document.getElementById('uploadBtn').textContent = '選擇圖片';
+                }
+
+                // Show/hide panels
+                if (mode === 'compress') {
+                    document.getElementById('batchImagesSection').classList.add('hidden');
+                    document.getElementById('settingsPanel').classList.add('hidden');
+                    document.getElementById('downloadSection').classList.add('hidden');
+                    document.getElementById('progressSection').classList.add('hidden');
+                    document.getElementById('compressSettings').classList.remove('hidden');
+                } else {
+                    document.getElementById('compressSettings').classList.add('hidden');
+                    document.getElementById('compressResult').classList.add('hidden');
+                    if (this.images.size > 0) {
+                        document.getElementById('batchImagesSection').classList.remove('hidden');
+                        document.getElementById('settingsPanel').classList.remove('hidden');
+                        if (this.processedResults.size > 0) {
+                            document.getElementById('downloadSection').classList.remove('hidden');
+                        }
+                    }
+                }
+            }
+
+            // ── Compression Methods ──
+            async compressCurrentImage() {
+                if (this.images.size === 0) {
+                    this.showStatus('請先上傳圖片', 'error');
+                    return;
+                }
+                const imageData = this.images.values().next().value;
+                const targetSize = parseFloat(document.getElementById('compressTargetSize').value);
+                const unit = document.getElementById('compressSizeUnit').value;
+                const targetBytes = unit === 'MB' ? targetSize * 1024 * 1024 : targetSize * 1024;
+                const format = document.querySelector('input[name="compressFormat"]:checked').value;
+                const maxWidth = parseInt(document.getElementById('compressMaxWidth').value) || 0;
+                const maxHeight = parseInt(document.getElementById('compressMaxHeight').value) || 0;
+
+                if (!targetSize || targetSize <= 0) {
+                    this.showStatus('請輸入有效的目標大小', 'error');
+                    return;
+                }
+
+                this.showStatus('⏳ 正在壓縮...', 'info');
+                try {
+                    const result = await this.compressToTarget(imageData.image, targetBytes, format, maxWidth, maxHeight);
+                    this.compressResultBlob = result.blob;
+                    this.compressResultQuality = result.quality;
+                    this.showCompressResult(imageData, result);
+                    this.showStatus('✅ 壓縮完成！', 'success');
+                } catch (err) {
+                    this.showStatus('❌ 壓縮失敗：' + err.message, 'error');
+                    console.error('Compression error:', err);
+                }
+            }
+
+            async compressToTarget(image, targetBytes, format, maxWidth, maxHeight) {
+                const canvas = document.createElement('canvas');
+                let width = image.width;
+                let height = image.height;
+
+                // Resize if needed
+                if (maxWidth > 0 && width > maxWidth) {
+                    height = height * (maxWidth / width);
+                    width = maxWidth;
+                }
+                if (maxHeight > 0 && height > maxHeight) {
+                    width = width * (maxHeight / height);
+                    height = maxHeight;
+                }
+                width = Math.round(width);
+                height = Math.round(height);
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(image, 0, 0, width, height);
+
+                // If original already under target, return it
+                const originalBlob = await this.encodeToBlob(canvas, format, 0.92);
+                if (originalBlob.size <= targetBytes) {
+                    return { blob: originalBlob, quality: 0.92 };
+                }
+
+                // Binary search for best quality
+                let low = 0.05;
+                let high = 0.92;
+                let bestBlob = null;
+                let bestQuality = 0.05;
+
+                for (let i = 0; i < 12; i++) {
+                    const mid = Math.round((low + high) * 100) / 100;
+                    const blob = await this.encodeToBlob(canvas, format, mid);
+                    if (blob.size <= targetBytes) {
+                        bestBlob = blob;
+                        bestQuality = mid;
+                        low = mid;
+                    } else {
+                        high = mid;
+                    }
+                    if (bestBlob && Math.abs(bestBlob.size - targetBytes) / targetBytes < 0.03) break;
+                }
+
+                if (!bestBlob) {
+                    bestBlob = await this.encodeToBlob(canvas, format, 0.05);
+                    bestQuality = 0.05;
+                }
+                return { blob: bestBlob, quality: bestQuality };
+            }
+
+            encodeToBlob(canvas, format, quality) {
+                return new Promise((resolve) => {
+                    const mimeTypes = { jpeg: 'image/jpeg', webp: 'image/webp', png: 'image/png' };
+                    const mimeType = mimeTypes[format] || 'image/jpeg';
+                    if (format === 'png') {
+                        canvas.toBlob(resolve, 'image/png');
+                    } else {
+                        canvas.toBlob((blob) => resolve(blob), mimeType, quality);
+                    }
+                });
+            }
+
+            showCompressResult(imageData, result) {
+                document.getElementById('compressResult').classList.remove('hidden');
+                document.getElementById('compressOriginalPreview').src = imageData.image.src;
+                document.getElementById('compressOriginalSize').textContent = '📄 檔案大小：' + this.formatFileSize(imageData.file.size);
+
+                const url = URL.createObjectURL(result.blob);
+                document.getElementById('compressResultPreview').src = url;
+                document.getElementById('compressResultSize').textContent = '📦 檔案大小：' + this.formatFileSize(result.blob.size);
+                document.getElementById('compressQualityUsed').textContent = '⚙️ 使用品質：' + Math.round(result.quality * 100) + '%';
+
+                if (this._compressPreviewUrl) URL.revokeObjectURL(this._compressPreviewUrl);
+                this._compressPreviewUrl = url;
+
+                const savings = imageData.file.size - result.blob.size;
+                const percent = ((savings / imageData.file.size) * 100).toFixed(1);
+                const savingsEl = document.getElementById('compressSavings');
+                if (savings > 0) {
+                    savingsEl.innerHTML = '<span class="text-green-700 dark:text-green-300 font-semibold text-lg">✅ 節省 ' + this.formatFileSize(savings) + '（' + percent + '%）</span>';
+                } else {
+                    savingsEl.innerHTML = '<span class="text-yellow-600 dark:text-yellow-400 font-semibold text-lg">⚠️ 壓縮後反而變大，建議改用原始檔案</span>';
+                }
+            }
+
+            formatFileSize(bytes) {
+                if (bytes >= 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+                if (bytes >= 1024) return (bytes / 1024).toFixed(1) + ' KB';
+                return bytes + ' B';
+            }
+
+            downloadCompressedImage() {
+                if (!this.compressResultBlob) return;
+                const imageData = this.images.values().next().value;
+                if (!imageData) return;
+                const format = document.querySelector('input[name="compressFormat"]:checked').value;
+                const ext = format === 'jpeg' ? 'jpg' : format;
+                const targetSize = document.getElementById('compressTargetSize').value;
+                const unit = document.getElementById('compressSizeUnit').value;
+                const filename = imageData.name + '_compressed_' + targetSize + unit + '.' + ext;
+                this.downloadBlob(this.compressResultBlob, filename);
+                this.showStatus('✅ 已下載 ' + filename, 'success');
+            }
+
             showSettingsPanel() {
                 document.getElementById('settingsPanel').classList.remove('hidden');
             }
@@ -648,7 +1086,169 @@
                 document.getElementById('settingsPanel').classList.add('hidden');
                 document.getElementById('progressSection').classList.add('hidden');
                 document.getElementById('downloadSection').classList.add('hidden');
+                document.getElementById('compressSettings').classList.add('hidden');
+                document.getElementById('compressResult').classList.add('hidden');
             }
+
+            // ── Auto Background Removal Methods ──
+
+            async loadBgRemovalLibrary() {
+                if (this.bgRemovalLib) return this.bgRemovalLib;
+                if (this.bgRemovalLoading) {
+                    while (this.bgRemovalLoading) {
+                        await new Promise(r => setTimeout(r, 200));
+                    }
+                    return this.bgRemovalLib;
+                }
+                this.bgRemovalLoading = true;
+                const statusEl = document.getElementById('bgRemoveStatus');
+                statusEl.textContent = '⏳ 正在下載 AI 去背模型（首次約 40MB）...';
+                statusEl.classList.remove('hidden');
+                try {
+                    const mod = await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal/+esm');
+                    this.bgRemovalLib = mod;
+                    statusEl.textContent = '✅ AI 模型已就緒，開始處理圖片...';
+                    return mod;
+                } catch (err) {
+                    statusEl.textContent = '❌ AI 模型載入失敗，請檢查網路連線';
+                    console.error('Bg removal load error:', err);
+                    document.getElementById('autoRemoveBg').checked = false;
+                    throw err;
+                } finally {
+                    this.bgRemovalLoading = false;
+                }
+            }
+
+            async removeBackgroundFromImage(imageData) {
+                if (!this.bgRemovalLib) throw new Error('Library not loaded');
+                const card = document.querySelector(`[data-image-id="${imageData.id}"]`);
+                const spinner = card?.querySelector('.deback-spinner');
+                if (spinner) spinner.classList.remove('hidden');
+                try {
+                    const blob = await this.bgRemovalLib.removeBackground(imageData.image);
+                    const debackedImage = await this.blobToImage(blob);
+                    imageData.debackedBlob = blob;
+                    imageData.debackedImage = debackedImage;
+                    this.showDebackPreview(imageData);
+                    return debackedImage;
+                } catch (err) {
+                    console.error(`Deback failed for ${imageData.name}:`, err);
+                    const statusEl = document.getElementById('bgRemoveStatus');
+                    statusEl.textContent = `❌ ${imageData.name} 去背失敗`;
+                    throw err;
+                } finally {
+                    if (spinner) spinner.classList.add('hidden');
+                }
+            }
+
+            blobToImage(blob) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        URL.revokeObjectURL(img.src);
+                        resolve(img);
+                    };
+                    img.onerror = () => {
+                        URL.revokeObjectURL(img.src);
+                        reject(new Error('Failed to load image'));
+                    };
+                    img.src = URL.createObjectURL(blob);
+                });
+            }
+
+            showDebackPreview(imageData) {
+                const card = document.querySelector(`[data-image-id="${imageData.id}"]`);
+                if (!card) return;
+                const preview = card.querySelector('.deback-preview');
+                if (!preview) return;
+                preview.classList.remove('hidden');
+                const canvas = preview.querySelector('canvas');
+                if (!canvas) return;
+                const size = 120;
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                this.drawCheckerboard(ctx, size);
+                const img = imageData.debackedImage;
+                const aspect = img.width / img.height;
+                let dw, dh;
+                if (aspect > 1) { dw = size; dh = size / aspect; }
+                else { dw = size * aspect; dh = size; }
+                const dx = (size - dw) / 2;
+                const dy = (size - dh) / 2;
+                ctx.drawImage(img, dx, dy, dw, dh);
+            }
+
+            drawCheckerboard(ctx, size, tileSize = 8) {
+                for (let y = 0; y < size; y += tileSize) {
+                    for (let x = 0; x < size; x += tileSize) {
+                        const light = (Math.floor(x / tileSize) + Math.floor(y / tileSize)) % 2 === 0;
+                        ctx.fillStyle = light ? '#d1d5db' : '#9ca3af';
+                        ctx.fillRect(x, y, tileSize, tileSize);
+                    }
+                }
+            }
+
+            async handleBgRemovalToggle() {
+                const toggle = document.getElementById('autoRemoveBg');
+                if (toggle.checked) {
+                    await this.startBatchDebacking();
+                } else {
+                    this.clearDebackResults();
+                }
+                if (this.images.size > 0) {
+                    clearTimeout(this.debounceTimer);
+                    this.debounceTimer = setTimeout(() => this.updatePreview(), 300);
+                }
+            }
+
+            async startBatchDebacking() {
+                if (this.debackingInProgress) {
+                    // Wait for existing batch to finish
+                    while (this.debackingInProgress) {
+                        await new Promise(r => setTimeout(r, 200));
+                    }
+                    return;
+                }
+                this.debackingInProgress = true;
+                const statusEl = document.getElementById('bgRemoveStatus');
+                statusEl.classList.remove('hidden');
+                try {
+                    await this.loadBgRemovalLibrary();
+                    const entries = Array.from(this.images.entries());
+                    let processed = 0;
+                    for (const [imageId, imageData] of entries) {
+                        if (imageData.debackedImage) { processed++; continue; }
+                        statusEl.textContent = `🔄 去背中 ${processed + 1}/${entries.length}: ${imageData.name}`;
+                        try { await this.removeBackgroundFromImage(imageData); processed++; }
+                        catch (e) { /* error logged in removeBackgroundFromImage */ }
+                    }
+                    statusEl.textContent = `✅ 去背完成 (${processed}/${entries.length})`;
+                } catch (err) {
+                    const toggle = document.getElementById('autoRemoveBg');
+                    toggle.checked = false;
+                } finally {
+                    this.debackingInProgress = false;
+                }
+            }
+
+            clearDebackResults() {
+                this.images.forEach((imageData) => {
+                    if (imageData.debackedBlob) {
+                        URL.revokeObjectURL(imageData.debackedImage?.src || '');
+                    }
+                    imageData.debackedBlob = null;
+                    imageData.debackedImage = null;
+                });
+                document.querySelectorAll('.deback-preview').forEach(el => {
+                    el.classList.add('hidden');
+                    const canvas = el.querySelector('canvas');
+                    if (canvas) { canvas.width = 0; canvas.height = 0; }
+                });
+                document.getElementById('bgRemoveStatus').classList.add('hidden');
+            }
+
+            // ── End Auto Background Removal Methods ──
 
             async updatePreview() {
                 if (this.images.size === 0) return;
@@ -668,6 +1268,15 @@
                     return;
                 }
 
+                // Ensure de-backing is complete if toggle is on
+                if (document.getElementById('autoRemoveBg')?.checked) {
+                    const pendingImages = Array.from(this.images.values()).filter(id => !id.debackedImage);
+                    if (pendingImages.length > 0) {
+                        this.showStatus(`正在完成去背處理 (${pendingImages.length} 張)...`, 'info');
+                        await this.startBatchDebacking();
+                    }
+                }
+
                 // Track conversion start
                 trackEvent('conversion_started', {
                     format: selectedFormat,
@@ -682,7 +1291,7 @@
 
                 for (const [imageId, imageData] of this.images) {
                     const size = parseInt(selectedSize);
-                    const canvas = this.createIconCanvas(imageData.image, size);
+                    const canvas = this.createIconCanvas(imageData, size);
                     
                     let result;
                     if (selectedFormat === 'ico') {
@@ -711,11 +1320,17 @@
                 await this.updatePreviewGrid();
             }
 
-            createIconCanvas(image, size) {
+            createIconCanvas(imageData, size) {
                 const canvas = document.createElement('canvas');
                 canvas.width = size;
                 canvas.height = size;
                 const ctx = canvas.getContext('2d');
+
+                // Use de-backed image if available and toggle is on
+                const bgRemovalOn = document.getElementById('autoRemoveBg')?.checked;
+                const sourceImage = (bgRemovalOn && imageData.debackedImage)
+                    ? imageData.debackedImage
+                    : imageData.image;
 
                 // Apply background settings
                 const bgSetting = document.querySelector('input[name="background"]:checked').value;
@@ -726,10 +1341,11 @@
                     ctx.fillStyle = document.getElementById('customBgColor').value;
                     ctx.fillRect(0, 0, size, size);
                 }
+                // If transparent, leave canvas transparent (draw on top of nothing)
 
                 // Apply scaling method
                 const scalingMethod = document.getElementById('scalingMethod').value;
-                this.drawImageWithScaling(ctx, image, size, scalingMethod);
+                this.drawImageWithScaling(ctx, sourceImage, size, scalingMethod);
 
                 return canvas;
             }
@@ -868,8 +1484,8 @@
                         const previewCanvas = previewItem.querySelector('canvas');
                         const ctx = previewCanvas.getContext('2d');
                         
-                        // Create a temporary canvas from the original image for preview
-                        const tempCanvas = this.createIconCanvas(imageData.image, result.size);
+                        // Create a temporary canvas from the image for preview
+                        const tempCanvas = this.createIconCanvas(imageData, result.size);
                         ctx.drawImage(tempCanvas, 0, 0);
                         
                         previewGrid.appendChild(previewItem);
