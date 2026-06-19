@@ -54,7 +54,7 @@ export class BackgroundRemover {
             const result = await lib.removeBackground(image, {
                 progress: options.onProgress || (() => {}),
                 // 可調整參數以提升效能
-                model: 'default'
+                model: 'isnet'
             });
             return result;
         } catch (err) {
