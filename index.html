@@ -19,118 +19,32 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="PicTool 圖片工具箱 - 免費線上圖片轉換、AI去背、壓縮">
     <meta name="twitter:description" content="免費線上圖片處理：格式轉換、AI 自動去背、壓縮到指定大小。瀏覽器本地執行，安全快速。">
-    
+
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "PicTool 圖片工具箱",
-        "url": "https://sid-1996.github.io/pictool/",
-        "description": "免費線上圖片處理工具：格式轉換、AI自動去背、壓縮到指定大小。完全在瀏覽器執行。",
-        "applicationCategory": "Multimedia",
-        "operatingSystem": "All",
-        "browserRequirements": "Requires JavaScript",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "TWD"
-        },
-        "author": {
-            "@type": "Person",
-            "name": "Sid"
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "PicTool 圖片工具箱",
+            "url": "https://sid-1996.github.io/pictool/",
+            "description": "免費線上圖片處理工具：格式轉換、AI自動去背、壓縮到指定大小。完全在瀏覽器執行。",
+            "applicationCategory": "Multimedia",
+            "operatingSystem": "All",
+            "browserRequirements": "Requires JavaScript",
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "TWD"
+            },
+            "author": {
+                "@type": "Person",
+                "name": "Sid"
+            }
         }
-    }
     </script>
 
-    <!-- Google tag (gtag.js) -->
-    <script>
-        // 多層加密的GA ID (AES-like + XOR + Base64 + 字符混淆 + 時間戳驗證)
-        const encryptedData = {
-            payload: 'M2Y4ZDJhNWI3YzNlOWY4ZA==',
-            salt: 'aGVsbG93b3JsZA==',
-            checksum: '4a7b9c2d',
-            timestamp: Date.now()
-        };
-        
-        // 複雜解密函數
-        function advancedDecrypt(data) {
-            try {
-                // 第一層：Base64解碼
-                let decoded = atob(data.payload);
-                
-                // 第二層：XOR解密 (使用salt)
-                const saltDecoded = atob(data.salt);
-                let xorResult = '';
-                for (let i = 0; i < decoded.length; i++) {
-                    const saltChar = saltDecoded.charCodeAt(i % saltDecoded.length);
-                    xorResult += String.fromCharCode(decoded.charCodeAt(i) ^ saltChar);
-                }
-                
-                // 第三層：字符替換解密
-                const charMap = {
-                    'X': 'G', 'Y': '-', 'Z': '0', 'A': '1', 'B': '2', 'C': '3', 
-                    'D': '4', 'E': '5', 'F': '6', 'G': '7', 'H': '8', 'I': '9'
-                };
-                
-                let result = '';
-                for (let char of xorResult) {
-                    result += charMap[char] || char;
-                }
-                
-                // 第四層：反向Caesar密碼 (位移3)
-                let finalResult = '';
-                for (let char of result) {
-                    if (char >= 'A' && char <= 'Z') {
-                        finalResult += String.fromCharCode(((char.charCodeAt(0) - 65 - 3 + 26) % 26) + 65);
-                    } else if (char >= 'a' && char <= 'z') {
-                        finalResult += String.fromCharCode(((char.charCodeAt(0) - 97 - 3 + 26) % 26) + 97);
-                    } else {
-                        finalResult += char;
-                    }
-                }
-                
-                // 驗證checksum
-                const expectedChecksum = btoa(finalResult).slice(-8);
-                if (expectedChecksum.toLowerCase().includes(data.checksum.slice(0, 4))) {
-                    return finalResult;
-                }
-                
-                // 如果驗證失敗，返回備用ID
-                return 'G-XXXXXXXXXX';
-                
-            } catch (error) {
-                // 錯誤處理：返回備用ID
-                console.warn('Analytics initialization failed');
-                return 'G-XXXXXXXXXX';
-            }
-        }
-        
-        // 動態載入GA (延遲載入增加安全性)
-        setTimeout(() => {
-            const gaId = advancedDecrypt(encryptedData);
-            
-            // 只有在有效ID時才載入
-            if (gaId && gaId !== 'G-XXXXXXXXXX' && gaId.startsWith('G-')) {
-                const script = document.createElement('script');
-                script.async = true;
-                script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
-                script.onerror = () => console.warn('Analytics script failed to load');
-                document.head.appendChild(script);
-                
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', gaId, {
-                    anonymize_ip: true,
-                    cookie_flags: 'SameSite=Strict;Secure'
-                });
-            }
-        }, Math.random() * 1000 + 500); // 隨機延遲500-1500ms
-    </script>
-    
+    <!-- External CSS & JS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -144,121 +58,22 @@
             }
         }
     </script>
-    <style>
-        .upload-zone {
-            border: 2px dashed #cbd5e1;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+
+    <!-- Import Map for ESM -->
+    <script type="importmap">
+        {
+            "imports": {
+                "jszip": "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"
+            }
         }
-        .upload-zone.dragover {
-            border-color: #3b82f6;
-            background-color: #eff6ff;
-            transform: scale(1.02);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        .dark .upload-zone.dragover {
-            background-color: #1e3a8a;
-            border-color: #60a5fa;
-        }
-        .preview-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 12px;
-        }
-        .size-radio:checked + label,
-        .format-radio:checked + label {
-            background-color: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-        .dark .size-radio:checked + label,
-        .dark .format-radio:checked + label {
-            background-color: #60a5fa;
-            color: #1f2937;
-            border-color: #60a5fa;
-        }
-        .pulse-animation {
-            animation: pulse 2s infinite;
-        }
-        .progress-bar {
-            transition: width 0.3s ease;
-        }
-        .image-card {
-            transition: all 0.3s ease;
-        }
-        .image-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        /* Toggle switch */
-        .toggle-checkbox:checked + .toggle-label .toggle-dot {
-            transform: translateX(1.5rem);
-        }
-        .toggle-checkbox:checked + .toggle-label .toggle-bg {
-            background-color: #3b82f6;
-        }
-        .dark .toggle-checkbox:checked + .toggle-label .toggle-bg {
-            background-color: #60a5fa;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        @keyframes slideIn {
-            from { transform: translateX(-100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .slide-in {
-            animation: slideIn 0.3s ease-out;
-        }
-        /* Mode tabs */
-        .mode-tab {
-            transition: all 0.3s ease;
-        }
-        .mode-tab.active {
-            background-color: #3b82f6;
-            color: white;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-        .dark .mode-tab.active {
-            background-color: #60a5fa;
-            color: #1f2937;
-        }
-        .mode-tab:not(.active) {
-            color: #4b5563;
-        }
-        .dark .mode-tab:not(.active) {
-            color: #9ca3af;
-        }
-        .mode-tab:not(.active):hover {
-            background-color: #f3f4f6;
-        }
-        .dark .mode-tab:not(.active):hover {
-            background-color: #374151;
-        }
-        /* Compress format radios */
-        .compress-format-radio:checked + label {
-            background-color: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-        .compress-format-radio:checked + label span {
-            color: white;
-        }
-        .dark .compress-format-radio:checked + label {
-            background-color: #60a5fa;
-            color: #1f2937;
-            border-color: #60a5fa;
-        }
-        .dark .compress-format-radio:checked + label span {
-            color: #1f2937;
-        }
-    </style>
+    </script>
+
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Google Analytics (Deferred in analytics.js) -->
+    <script type="module" src="js/analytics.js"></script>
+
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-900 min-h-screen transition-colors duration-300">
     <div class="container mx-auto px-4 py-8 max-w-6xl">
@@ -268,8 +83,6 @@
                 <h1 class="text-4xl font-bold text-gray-800 dark:text-white mb-2">🛠️ PicTool 圖片工具箱</h1>
                 <p class="text-gray-600 dark:text-gray-300 text-lg">免費線上轉換 • AI去背 • 壓縮大小 • <span class="font-semibold text-blue-600 dark:text-blue-400">批次處理</span></p>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">✨ 完全在瀏覽器執行，不上傳伺服器，保護您的隱私</p>
-                
-
             </div>
             <button id="darkModeToggle" class="p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 text-2xl">
                 <span class="dark:hidden">🌙</span>
@@ -279,12 +92,8 @@
 
         <!-- Mode Tabs -->
         <div class="flex mb-6 bg-white dark:bg-gray-800 rounded-xl p-1.5 shadow-lg gap-1">
-            <button id="tabConvert" class="mode-tab active flex-1 py-3 px-4 rounded-lg font-medium text-center">
-                🔄 格式轉換
-            </button>
-            <button id="tabCompress" class="mode-tab flex-1 py-3 px-4 rounded-lg font-medium text-center">
-                📦 壓縮圖片
-            </button>
+            <button id="tabConvert" class="mode-tab active flex-1 py-3 px-4 rounded-lg font-medium text-center">🔄 格式轉換</button>
+            <button id="tabCompress" class="mode-tab flex-1 py-3 px-4 rounded-lg font-medium text-center">📦 壓縮圖片</button>
         </div>
 
         <!-- Upload Zone -->
@@ -297,9 +106,7 @@
                     <p class="text-blue-700 dark:text-blue-300 font-medium">💡 快速轉換：按 <kbd class="bg-blue-200 dark:bg-blue-700 px-2 py-1 rounded text-sm">Ctrl+V</kbd> 直接貼上圖片！</p>
                     <p id="uploadHint" class="text-blue-600 dark:text-blue-400 text-sm mt-2">📦 輸出標準ICO格式，適用於網站圖示、應用程式圖示</p>
                 </div>
-                <button id="uploadBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-                    選擇圖片
-                </button>
+                <button id="uploadBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors">選擇圖片</button>
             </div>
         </div>
 
@@ -308,13 +115,9 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">已上傳的圖片 (<span id="imageCount">0</span>)</h3>
-                    <button id="clearAllBtn" class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium">
-                        🗑️ 清除全部
-                    </button>
+                    <button id="clearAllBtn" class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium">🗑️ 清除全部</button>
                 </div>
-                <div id="batchImagesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
-                    <!-- Batch images will be displayed here -->
-                </div>
+                <div id="batchImagesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto"></div>
             </div>
         </div>
 
@@ -322,29 +125,13 @@
         <div id="settingsPanel" class="hidden bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
             <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-6">⚙️ 轉換設定</h3>
             
-            <!-- Output Format Selection -->
+            <!-- Output Format -->
             <div class="mb-6">
                 <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">輸出格式</h4>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div>
-                        <input type="radio" id="formatICO" class="format-radio hidden" name="outputFormat" value="ico" checked>
-                        <label for="formatICO" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
-                            📄 ICO
-                        </label>
-                    </div>
-                    <div>
-                        <input type="radio" id="formatPNG" class="format-radio hidden" name="outputFormat" value="png">
-                        <label for="formatPNG" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
-                            🖼️ PNG
-                        </label>
-                    </div>
-
-                    <div>
-                        <input type="radio" id="formatWebP" class="format-radio hidden" name="outputFormat" value="webp">
-                        <label for="formatWebP" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
-                            🚀 WebP
-                        </label>
-                    </div>
+                    <div><input type="radio" id="formatICO" class="format-radio hidden" name="outputFormat" value="ico" checked><label for="formatICO" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">📄 ICO</label></div>
+                    <div><input type="radio" id="formatPNG" class="format-radio hidden" name="outputFormat" value="png"><label for="formatPNG" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">🖼️ PNG</label></div>
+                    <div><input type="radio" id="formatWebP" class="format-radio hidden" name="outputFormat" value="webp"><label for="formatWebP" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">🚀 WebP</label></div>
                 </div>
             </div>
 
@@ -352,68 +139,25 @@
             <div class="mb-6">
                 <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">選擇尺寸</h4>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                    <div>
-                        <input type="radio" id="size16" class="size-radio hidden" name="iconSize" value="16">
-                        <label for="size16" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
-                            16×16
-                        </label>
-                    </div>
-                    <div>
-                        <input type="radio" id="size32" class="size-radio hidden" name="iconSize" value="32" checked>
-                        <label for="size32" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
-                            32×32
-                        </label>
-                    </div>
-                    <div>
-                        <input type="radio" id="size48" class="size-radio hidden" name="iconSize" value="48">
-                        <label for="size48" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
-                            48×48
-                        </label>
-                    </div>
-                    <div>
-                        <input type="radio" id="size64" class="size-radio hidden" name="iconSize" value="64">
-                        <label for="size64" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
-                            64×64
-                        </label>
-                    </div>
-                    <div>
-                        <input type="radio" id="size128" class="size-radio hidden" name="iconSize" value="128">
-                        <label for="size128" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
-                            128×128
-                        </label>
-                    </div>
-                    <div>
-                        <input type="radio" id="size256" class="size-radio hidden" name="iconSize" value="256">
-                        <label for="size256" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
-                            256×256
-                        </label>
-                    </div>
+                    <div><input type="radio" id="size16" class="size-radio hidden" name="iconSize" value="16"><label for="size16" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">16×16</label></div>
+                    <div><input type="radio" id="size32" class="size-radio hidden" name="iconSize" value="32" checked><label for="size32" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">32×32</label></div>
+                    <div><input type="radio" id="size48" class="size-radio hidden" name="iconSize" value="48"><label for="size48" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">48×48</label></div>
+                    <div><input type="radio" id="size64" class="size-radio hidden" name="iconSize" value="64"><label for="size64" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">64×64</label></div>
+                    <div><input type="radio" id="size128" class="size-radio hidden" name="iconSize" value="128"><label for="size128" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">128×128</label></div>
+                    <div><input type="radio" id="size256" class="size-radio hidden" name="iconSize" value="256"><label for="size256" class="block text-center py-2 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">256×256</label></div>
                 </div>
             </div>
 
-            <!-- Background & Quality Settings -->
+            <!-- Background & Quality -->
             <div class="grid md:grid-cols-2 gap-6 mb-6">
-                <!-- Background Settings -->
                 <div>
                     <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">背景處理</h4>
                     <div class="space-y-2">
-                        <label class="flex items-center">
-                            <input type="radio" name="background" value="transparent" checked class="mr-2">
-                            <span class="text-gray-700 dark:text-gray-300">保留透明背景</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="radio" name="background" value="white" class="mr-2">
-                            <span class="text-gray-700 dark:text-gray-300">白色背景</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="radio" name="background" value="custom" class="mr-2">
-                            <span class="text-gray-700 dark:text-gray-300">自訂顏色：</span>
-                            <input type="color" id="customBgColor" value="#ffffff" class="ml-2 w-8 h-8 rounded border">
-                        </label>
+                        <label class="flex items-center"><input type="radio" name="background" value="transparent" checked class="mr-2"><span class="text-gray-700 dark:text-gray-300">保留透明背景</span></label>
+                        <label class="flex items-center"><input type="radio" name="background" value="white" class="mr-2"><span class="text-gray-700 dark:text-gray-300">白色背景</span></label>
+                        <label class="flex items-center"><input type="radio" name="background" value="custom" class="mr-2"><span class="text-gray-700 dark:text-gray-300">自訂顏色：</span><input type="color" id="customBgColor" value="#ffffff" class="ml-2 w-8 h-8 rounded border"></label>
                     </div>
                 </div>
-
-                <!-- Scaling Method -->
                 <div>
                     <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">縮放方式</h4>
                     <select id="scalingMethod" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300">
@@ -429,10 +173,7 @@
             <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
                 <label class="flex items-center justify-between cursor-pointer">
                     <div class="flex-1">
-                        <div class="flex items-center gap-2">
-                            <span class="text-md font-medium text-gray-700 dark:text-gray-300">🎨 自動去背</span>
-                            <span class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-medium">AI</span>
-                        </div>
+                        <div class="flex items-center gap-2"><span class="text-md font-medium text-gray-700 dark:text-gray-300">🎨 自動去背</span><span class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-medium">AI</span></div>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">使用 AI 自動移除圖片背景，再套用下方背景設定</p>
                     </div>
                     <div class="relative ml-4 flex-shrink-0">
@@ -450,13 +191,14 @@
             <div class="mb-4">
                 <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">檔案命名</h4>
                 <div class="flex gap-3">
-                    <input type="text" id="customFileName" placeholder="自訂檔名（留空使用原檔名）" 
-                           class="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500">
-                    <label class="flex items-center">
-                        <input type="checkbox" id="addSizeToName" class="mr-2">
-                        <span class="text-gray-700 dark:text-gray-300 text-sm">檔名加入尺寸</span>
-                    </label>
+                    <input type="text" id="customFileName" placeholder="自訂檔名（留空使用原檔名）" class="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500">
+                    <label class="flex items-center"><input type="checkbox" id="addSizeToName" class="mr-2"><span class="text-gray-700 dark:text-gray-300 text-sm">檔名加入尺寸</span></label>
                 </div>
+            </div>
+
+            <!-- Convert Button -->
+            <div class="text-center mt-6">
+                <button id="convertButton" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-lg transition-all transform hover:scale-105">🚀 開始轉換</button>
             </div>
         </div>
 
@@ -467,9 +209,7 @@
                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">處理進度</span>
                     <span id="progressText" class="text-sm text-gray-500 dark:text-gray-400">0%</span>
                 </div>
-                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                    <div id="progressBar" class="progress-bar bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
-                </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"><div id="progressBar" class="progress-bar bg-blue-600 h-2 rounded-full" style="width: 0%"></div></div>
                 <div id="progressDetails" class="text-xs text-gray-500 dark:text-gray-400 mt-2"></div>
             </div>
         </div>
@@ -478,20 +218,13 @@
         <div id="downloadSection" class="hidden">
             <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
                 <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">📥 下載選項</h3>
-                
                 <div class="mb-6">
                     <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">下載檔案</h4>
-                    <div id="downloadButtons" class="space-y-2">
-                        <!-- Download buttons will be generated here -->
-                    </div>
+                    <div id="downloadButtons" class="space-y-2"></div>
                 </div>
-
-                <!-- Preview Grid -->
                 <div id="previewSection" class="mb-4">
                     <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">預覽結果</h4>
-                    <div id="previewGrid" class="preview-grid bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                        <!-- Preview icons will be generated here -->
-                    </div>
+                    <div id="previewGrid" class="preview-grid bg-gray-50 dark:bg-gray-700 rounded-lg p-4"></div>
                 </div>
             </div>
         </div>
@@ -499,54 +232,26 @@
         <!-- Compression Settings -->
         <div id="compressSettings" class="hidden bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
             <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-6">⚙️ 壓縮設定</h3>
-            
-            <!-- Target Size -->
             <div class="mb-5">
                 <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">目標大小</h4>
                 <div class="flex gap-3 items-center">
-                    <input type="number" id="compressTargetSize" value="1" min="0.1" step="0.1"
-                           class="w-32 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                    <select id="compressSizeUnit" class="p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                        <option value="KB">KB</option>
-                        <option value="MB" selected>MB</option>
-                    </select>
+                    <input type="number" id="compressTargetSize" value="1" min="0.1" step="0.1" class="w-32 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                    <select id="compressSizeUnit" class="p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"><option value="KB">KB</option><option value="MB" selected>MB</option></select>
                     <span class="text-sm text-gray-400">壓縮到此大小內</span>
                 </div>
             </div>
-
-            <!-- Output Format -->
             <div class="mb-5">
                 <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">輸出格式</h4>
                 <div class="grid grid-cols-3 gap-3">
-                    <div>
-                        <input type="radio" id="cfJpeg" class="compress-format-radio hidden" name="compressFormat" value="jpeg" checked>
-                        <label for="cfJpeg" class="block text-center py-3 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
-                            JPEG <span class="text-xs block">推薦</span>
-                        </label>
-                    </div>
-                    <div>
-                        <input type="radio" id="cfWebp" class="compress-format-radio hidden" name="compressFormat" value="webp">
-                        <label for="cfWebp" class="block text-center py-3 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
-                            WebP
-                        </label>
-                    </div>
-                    <div>
-                        <input type="radio" id="cfPng" class="compress-format-radio hidden" name="compressFormat" value="png">
-                        <label for="cfPng" class="block text-center py-3 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">
-                            PNG
-                        </label>
-                    </div>
+                    <div><input type="radio" id="cfJpeg" class="compress-format-radio hidden" name="compressFormat" value="jpeg" checked><label for="cfJpeg" class="block text-center py-3 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">JPEG <span class="text-xs block">推薦</span></label></div>
+                    <div><input type="radio" id="cfWebp" class="compress-format-radio hidden" name="compressFormat" value="webp"><label for="cfWebp" class="block text-center py-3 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">WebP</label></div>
+                    <div><input type="radio" id="cfPng" class="compress-format-radio hidden" name="compressFormat" value="png"><label for="cfPng" class="block text-center py-3 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">PNG</label></div>
                 </div>
             </div>
-
-            <!-- Auto Background Removal for Compression -->
             <div class="mb-5 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
                 <label class="flex items-center justify-between cursor-pointer">
                     <div class="flex-1">
-                        <div class="flex items-center gap-2">
-                            <span class="text-md font-medium text-gray-700 dark:text-gray-300">🎨 自動去背</span>
-                            <span class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-medium">AI</span>
-                        </div>
+                        <div class="flex items-center gap-2"><span class="text-md font-medium text-gray-700 dark:text-gray-300">🎨 自動去背</span><span class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-medium">AI</span></div>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">使用 AI 自動移除圖片背景，再進行壓縮</p>
                     </div>
                     <div class="relative ml-4 flex-shrink-0">
@@ -559,88 +264,53 @@
                 </label>
                 <div id="compressBgRemoveStatus" class="text-xs text-gray-500 dark:text-gray-400 mt-2 hidden flex items-center justify-between flex-wrap gap-2">
                     <span id="compressBgRemoveStatusText"></span>
-                    <button id="compressDownloadDebackedBtn" class="hidden bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-sm font-medium transition-all">
-                        📥 下載去背原圖
-                    </button>
+                    <button id="compressDownloadDebackedBtn" class="hidden bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-sm font-medium transition-all">📥 下載去背原圖</button>
                 </div>
-                
-                <!-- Background Options for Compression -->
                 <div id="compressBgSettingsContainer" class="hidden mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
                     <h4 class="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">背景處理</h4>
                     <div class="flex flex-wrap gap-4 text-sm">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="compressBackground" value="transparent" checked class="mr-2 cursor-pointer">
-                            <span class="text-gray-700 dark:text-gray-300">保留透明背景</span>
-                        </label>
-                        <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="compressBackground" value="white" class="mr-2 cursor-pointer">
-                            <span class="text-gray-700 dark:text-gray-300">白色背景</span>
-                        </label>
-                        <label class="flex items-center cursor-pointer">
-                            <input type="radio" name="compressBackground" value="custom" class="mr-2 cursor-pointer">
-                            <span class="text-gray-700 dark:text-gray-300">自訂顏色：</span>
-                            <input type="color" id="compressCustomBgColor" value="#ffffff" class="ml-2 w-8 h-8 rounded border cursor-pointer">
-                        </label>
+                        <label class="flex items-center cursor-pointer"><input type="radio" name="compressBackground" value="transparent" checked class="mr-2 cursor-pointer"><span class="text-gray-700 dark:text-gray-300">保留透明背景</span></label>
+                        <label class="flex items-center cursor-pointer"><input type="radio" name="compressBackground" value="white" class="mr-2 cursor-pointer"><span class="text-gray-700 dark:text-gray-300">白色背景</span></label>
+                        <label class="flex items-center cursor-pointer"><input type="radio" name="compressBackground" value="custom" class="mr-2 cursor-pointer"><span class="text-gray-700 dark:text-gray-300">自訂顏色：</span><input type="color" id="compressCustomBgColor" value="#ffffff" class="ml-2 w-8 h-8 rounded border cursor-pointer"></label>
                     </div>
                     <p id="compressJpegWarning" class="text-xs text-yellow-600 dark:text-yellow-400 mt-2 hidden">⚠️ JPEG 格式不支援透明背景，將以白色背景輸出</p>
                 </div>
             </div>
-
-            <!-- Max Dimensions -->
             <div class="mb-5">
                 <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">最大尺寸 <span class="text-xs text-gray-400 font-normal">（選填，先縮圖再壓縮）</span></h4>
                 <div class="flex gap-3 items-center">
-                    <input type="number" id="compressMaxWidth" placeholder="寬度" min="1"
-                           class="w-32 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 placeholder-gray-400">
+                    <input type="number" id="compressMaxWidth" placeholder="寬度" min="1" class="w-32 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 placeholder-gray-400">
                     <span class="text-gray-400">×</span>
-                    <input type="number" id="compressMaxHeight" placeholder="高度" min="1"
-                           class="w-32 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 placeholder-gray-400">
+                    <input type="number" id="compressMaxHeight" placeholder="高度" min="1" class="w-32 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 placeholder-gray-400">
                     <span class="text-xs text-gray-400">px（留空不限制）</span>
                 </div>
             </div>
-
             <div class="text-center mt-6">
-                <button id="compressButton" class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-lg transition-all transform hover:scale-105">
-                    🚀 開始壓縮
-                </button>
+                <button id="compressButton" class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-lg transition-all transform hover:scale-105">🚀 開始壓縮</button>
             </div>
         </div>
 
         <!-- Compression Result -->
         <div id="compressResult" class="hidden bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
             <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">📊 壓縮結果</h3>
-            
             <div class="grid md:grid-cols-2 gap-6 mb-6">
-                <!-- Original -->
                 <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                     <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">📄 原始圖片</h4>
-                    <div class="aspect-square bg-white dark:bg-gray-600 rounded-lg overflow-hidden mb-2">
-                        <img id="compressOriginalPreview" class="w-full h-full object-contain">
-                    </div>
+                    <div class="aspect-square bg-white dark:bg-gray-600 rounded-lg overflow-hidden mb-2"><img id="compressOriginalPreview" class="w-full h-full object-contain"></div>
                     <div id="compressOriginalSize" class="text-sm text-gray-700 dark:text-gray-300"></div>
                 </div>
-                
-                <!-- Compressed -->
                 <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                     <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">📦 壓縮後</h4>
-                    <div class="aspect-square bg-white dark:bg-gray-600 rounded-lg overflow-hidden mb-2">
-                        <img id="compressResultPreview" class="w-full h-full object-contain">
-                    </div>
+                    <div class="aspect-square bg-white dark:bg-gray-600 rounded-lg overflow-hidden mb-2"><img id="compressResultPreview" class="w-full h-full object-contain"></div>
                     <div id="compressResultSize" class="text-sm text-gray-700 dark:text-gray-300"></div>
                     <div id="compressQualityUsed" class="text-xs text-gray-400 mt-1"></div>
                 </div>
             </div>
-
             <div id="compressSavings" class="text-center p-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg mb-4"></div>
-
-            <div class="text-center">
-                <button id="compressDownloadBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-lg transition-all">
-                    📥 下載壓縮圖片
-                </button>
-            </div>
+            <div class="text-center"><button id="compressDownloadBtn" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-lg transition-all">📥 下載壓縮圖片</button></div>
         </div>
 
-        <!-- About & Privacy Info -->
+        <!-- About & Privacy -->
         <div id="privacySection" class="mt-8 grid md:grid-cols-2 gap-6">
             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-xl p-6 shadow-lg border border-blue-200 dark:border-blue-700">
                 <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-3">🛠️ 關於 PicTool</h3>
@@ -663,1323 +333,22 @@
                     <p>🌙 右上角按鈕切換深色模式</p>
                     <p>📊 切換「壓縮圖片」分頁壓縮檔案大小</p>
                     <p>🎨 開啟「自動去背」用 AI 移除背景</p>
-                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-3">
-                        Powered by @imgly/background-removal & Canvas API
-                    </p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-3">Powered by @imgly/background-removal & Canvas API</p>
                 </div>
             </div>
         </div>
 
-        <!-- Status Message -->
         <div id="statusMessage" class="hidden mt-6 p-4 rounded-lg text-center"></div>
     </div>
 
-    <!-- Hidden File Input -->
     <input type="file" id="fileInput" accept="image/*" multiple class="hidden">
 
-    <script>
-        // Google Analytics Event Tracking Helper
-        function trackEvent(eventName, parameters = {}) {
-            if (typeof gtag !== 'undefined') {
-                gtag('event', eventName, parameters);
-            }
-        }
-
-
-
-        class AdvancedImageConverter {
-            constructor() {
-                this.images = new Map(); // Store multiple images with unique IDs
-                this.processedResults = new Map(); // Store conversion results
-                this.currentProgress = 0;
-                this.totalProgress = 0;
-                this.bgRemovalLib = null;
-                this.bgRemovalLoading = false;
-                this.debackingInProgress = false;
-                this.currentMode = 'convert';
-                this.compressResultBlob = null;
-                this.compressResultQuality = null;
-                this._compressPreviewUrl = null;
-                this.initializeEventListeners();
-                this.initializeDarkMode();
-                
-                // Track page view
-                trackEvent('page_view', {
-                    page_title: '圖片轉ICO工具',
-                    page_location: window.location.href
-                });
-            }
-
-            initializeEventListeners() {
-                const uploadZone = document.getElementById('uploadZone');
-                const fileInput = document.getElementById('fileInput');
-
-                // Click to upload
-                uploadZone.addEventListener('click', () => fileInput.click());
-                fileInput.addEventListener('change', (e) => this.handleMultipleFiles(Array.from(e.target.files)));
-
-                // Drag and drop
-                uploadZone.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    uploadZone.classList.add('dragover');
-                });
-
-                uploadZone.addEventListener('dragleave', () => {
-                    uploadZone.classList.remove('dragover');
-                });
-
-                uploadZone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    uploadZone.classList.remove('dragover');
-                    const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
-                    if (files.length > 0) {
-                        this.handleMultipleFiles(files);
-                        // Track drag and drop usage
-                        trackEvent('file_upload', {
-                            method: 'drag_drop',
-                            file_count: files.length
-                        });
-                    }
-                });
-
-                // Paste from clipboard
-                document.addEventListener('paste', (e) => {
-                    const items = e.clipboardData.items;
-                    for (let item of items) {
-                        if (item.type.startsWith('image/')) {
-                            const file = item.getAsFile();
-                            this.handleMultipleFiles([file]);
-                            // Track clipboard paste usage
-                            trackEvent('file_upload', {
-                                method: 'clipboard_paste',
-                                file_count: 1
-                            });
-                            break;
-                        }
-                    }
-                });
-
-                // Settings change listeners with debounce
-                this.debounceTimer = null;
-                const debouncedUpdate = () => {
-                    clearTimeout(this.debounceTimer);
-                    this.debounceTimer = setTimeout(() => this.updatePreview(), 300);
-                };
-
-                document.querySelectorAll('.size-radio, .format-radio').forEach(radio => {
-                    radio.addEventListener('change', debouncedUpdate);
-                });
-
-                document.querySelectorAll('input[name="background"]').forEach(radio => {
-                    radio.addEventListener('change', debouncedUpdate);
-                });
-
-                document.getElementById('scalingMethod').addEventListener('change', debouncedUpdate);
-                document.getElementById('customBgColor').addEventListener('change', debouncedUpdate);
-                document.getElementById('customFileName').addEventListener('input', debouncedUpdate);
-                document.getElementById('addSizeToName').addEventListener('change', debouncedUpdate);
-
-                // Auto background removal toggle
-                document.getElementById('autoRemoveBg').addEventListener('change', () => {
-                    this.handleBgRemovalToggle();
-                });
-
-                // Compress background settings warning update helper
-                const updateCompressWarning = () => {
-                    const format = document.querySelector('input[name="compressFormat"]:checked')?.value;
-                    const bgSetting = document.querySelector('input[name="compressBackground"]:checked')?.value;
-                    const warningEl = document.getElementById('compressJpegWarning');
-                    if (warningEl) {
-                        if (format === 'jpeg' && bgSetting === 'transparent') {
-                            warningEl.classList.remove('hidden');
-                        } else {
-                            warningEl.classList.add('hidden');
-                        }
-                    }
-                };
-
-                // Auto background removal toggle for compression
-                document.getElementById('compressAutoRemoveBg').addEventListener('change', () => {
-                    this.handleCompressBgRemovalToggle();
-                    updateCompressWarning();
-                });
-
-                // Download debacked original image button
-                document.getElementById('compressDownloadDebackedBtn').addEventListener('click', () => {
-                    this.downloadDebackedOriginalImage();
-                });
-
-                // Re-compress when background options change
-                document.querySelectorAll('input[name="compressBackground"]').forEach(radio => {
-                    radio.addEventListener('change', () => {
-                        updateCompressWarning();
-                        if (this.images.size > 0 && !document.getElementById('compressResult').classList.contains('hidden')) {
-                            this.compressCurrentImage();
-                        }
-                    });
-                });
-
-                document.getElementById('compressCustomBgColor').addEventListener('change', () => {
-                    if (this.images.size > 0 && !document.getElementById('compressResult').classList.contains('hidden')) {
-                        this.compressCurrentImage();
-                    }
-                });
-
-                // Re-compress when compress format changes
-                document.querySelectorAll('input[name="compressFormat"]').forEach(radio => {
-                    radio.addEventListener('change', () => {
-                        updateCompressWarning();
-                        if (this.images.size > 0 && !document.getElementById('compressResult').classList.contains('hidden')) {
-                            this.compressCurrentImage();
-                        }
-                    });
-                });
-
-                // Clear all button
-                document.getElementById('clearAllBtn').addEventListener('click', () => this.clearAllImages());
-
-                // Mode tabs
-                document.getElementById('tabConvert').addEventListener('click', () => this.switchMode('convert'));
-                document.getElementById('tabCompress').addEventListener('click', () => this.switchMode('compress'));
-
-                // Compress button
-                document.getElementById('compressButton').addEventListener('click', () => this.compressCurrentImage());
-
-                // Compress download button
-                document.getElementById('compressDownloadBtn').addEventListener('click', () => this.downloadCompressedImage());
-            }
-
-            initializeDarkMode() {
-                const darkModeToggle = document.getElementById('darkModeToggle');
-                const isDark = localStorage.getItem('darkMode') === 'true';
-                
-                if (isDark) {
-                    document.documentElement.classList.add('dark');
-                }
-
-                darkModeToggle.addEventListener('click', () => {
-                    document.documentElement.classList.toggle('dark');
-                    const isDarkMode = document.documentElement.classList.contains('dark');
-                    localStorage.setItem('darkMode', isDarkMode);
-                    
-                    // Track dark mode usage
-                    trackEvent('dark_mode_toggle', {
-                        mode: isDarkMode ? 'dark' : 'light'
-                    });
-                });
-            }
-
-            async handleMultipleFiles(files) {
-                const validFiles = files.filter(file => file.type.startsWith('image/'));
-                
-                if (validFiles.length === 0) {
-                    this.showStatus('請選擇有效的圖片檔案', 'error');
-                    return;
-                }
-
-                this.showStatus(`正在載入 ${validFiles.length} 個檔案...`, 'info');
-                
-                // Track file upload
-                trackEvent('files_loaded', {
-                    file_count: validFiles.length,
-                    file_types: [...new Set(validFiles.map(f => f.type))]
-                });
-                
-                // In compress mode, replace previous image
-                if (this.currentMode === 'compress') {
-                    this.images.clear();
-                    this.processedResults.clear();
-                    this.compressResultBlob = null;
-                    if (this._compressPreviewUrl) {
-                        URL.revokeObjectURL(this._compressPreviewUrl);
-                        this._compressPreviewUrl = null;
-                    }
-                }
-
-                for (const file of validFiles) {
-                    await this.addImageToCollection(file);
-                }
-
-                this.updateImageDisplay();
-
-                if (this.currentMode === 'compress') {
-                    // In compress mode, show compress settings (single image)
-                    document.getElementById('compressSettings').classList.remove('hidden');
-                    document.getElementById('compressResult').classList.add('hidden');
-                    this.compressResultBlob = null;
-                } else {
-                    // In convert mode, show normal settings
-                    this.showSettingsPanel();
-                }
-
-                this.showStatus(`成功載入 ${validFiles.length} 個圖片檔案！`, 'success');
-                
-                // Auto-deback new images if toggle is already on
-                if (document.getElementById('autoRemoveBg')?.checked) {
-                    await this.startBatchDebacking();
-                }
-            }
-
-            async addImageToCollection(file) {
-                return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const img = new Image();
-                        img.onload = () => {
-                            const imageId = Date.now() + Math.random();
-                            this.images.set(imageId, {
-                                id: imageId,
-                                file: file,
-                                image: img,
-                                name: file.name.split('.')[0],
-                                originalName: file.name,
-                                debackedBlob: null,
-                                debackedImage: null
-                            });
-                            resolve();
-                        };
-                        img.src = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-
-            updateImageDisplay() {
-                const batchSection = document.getElementById('batchImagesSection');
-                const imagesList = document.getElementById('batchImagesList');
-                const imageCount = document.getElementById('imageCount');
-
-                if (this.images.size === 0) {
-                    batchSection.classList.add('hidden');
-                    return;
-                }
-
-                batchSection.classList.remove('hidden');
-                imageCount.textContent = this.images.size;
-                imagesList.innerHTML = '';
-
-                this.images.forEach((imageData, id) => {
-                    const imageCard = document.createElement('div');
-                    imageCard.className = 'image-card bg-gray-50 dark:bg-gray-700 rounded-lg p-4 slide-in';
-                    imageCard.dataset.imageId = id;
-                    const nameSpan = document.createElement('span');
-                    nameSpan.className = 'text-sm font-medium text-gray-700 dark:text-gray-300 truncate';
-                    nameSpan.textContent = imageData.name;
-                    
-                    const removeBtn = document.createElement('button');
-                    removeBtn.className = 'text-red-500 hover:text-red-700 text-sm';
-                    removeBtn.textContent = '❌';
-                    removeBtn.onclick = () => this.removeImage(id);
-                    
-                    const headerDiv = document.createElement('div');
-                    headerDiv.className = 'flex items-center justify-between mb-2';
-                    headerDiv.appendChild(nameSpan);
-                    headerDiv.appendChild(removeBtn);
-                    
-                    const img = document.createElement('img');
-                    img.src = imageData.image.src;
-                    img.alt = imageData.name;
-                    img.className = 'w-full h-full object-contain';
-                    
-                    const imgDiv = document.createElement('div');
-                    imgDiv.className = 'aspect-square bg-white dark:bg-gray-600 rounded-lg overflow-hidden mb-2';
-                    imgDiv.appendChild(img);
-                    
-                    const sizeDiv = document.createElement('div');
-                    sizeDiv.className = 'text-xs text-gray-500 dark:text-gray-400';
-                    sizeDiv.textContent = `${imageData.image.width} × ${imageData.image.height}`;
-                    
-                    // De-back preview area (hidden by default)
-                    const debackPreview = document.createElement('div');
-                    debackPreview.className = 'deback-preview hidden mt-2';
-                    debackPreview.innerHTML = `
-                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">🔍 去背預覽</div>
-                        <div class="aspect-square bg-white dark:bg-gray-600 rounded-lg overflow-hidden relative">
-                            <canvas class="w-full h-full"></canvas>
-                            <div class="deback-spinner hidden absolute inset-0 flex items-center justify-center bg-black/10 dark:bg-black/30 rounded-lg">
-                                <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    imageCard.appendChild(headerDiv);
-                    imageCard.appendChild(imgDiv);
-                    imageCard.appendChild(sizeDiv);
-                    imageCard.appendChild(debackPreview);
-                    imagesList.appendChild(imageCard);
-                });
-            }
-
-            removeImage(imageId) {
-                const imageData = this.images.get(imageId);
-                if (imageData) {
-                    if (imageData.debackedBlob) {
-                        URL.revokeObjectURL(imageData.debackedImage?.src || '');
-                    }
-                }
-                this.images.delete(imageId);
-                this.processedResults.delete(imageId);
-                this.updateImageDisplay();
-                
-                if (this.images.size === 0) {
-                    this.hideAllPanels();
-                }
-                
-                // Track image removal
-                trackEvent('image_removed');
-            }
-
-            clearAllImages() {
-                const imageCount = this.images.size;
-                this.clearDebackResults();
-                this.images.clear();
-                this.processedResults.clear();
-                this.updateImageDisplay();
-                this.hideAllPanels();
-                this.showStatus('已清除所有圖片', 'info');
-                
-                // Track clear all action
-                trackEvent('clear_all_images', {
-                    cleared_count: imageCount
-                });
-            }
-
-            // ── Mode Switching ──
-            switchMode(mode) {
-                this.currentMode = mode;
-                const tabConvert = document.getElementById('tabConvert');
-                const tabCompress = document.getElementById('tabCompress');
-                tabConvert.className = mode === 'convert' ? 'mode-tab active flex-1 py-3 px-4 rounded-lg font-medium text-center' : 'mode-tab flex-1 py-3 px-4 rounded-lg font-medium text-center';
-                tabCompress.className = mode === 'compress' ? 'mode-tab active flex-1 py-3 px-4 rounded-lg font-medium text-center' : 'mode-tab flex-1 py-3 px-4 rounded-lg font-medium text-center';
-
-                // Update upload zone text
-                if (mode === 'compress') {
-                    document.getElementById('uploadIcon').textContent = '📦';
-                    document.getElementById('uploadTitle').textContent = '上傳圖片壓縮大小';
-                    document.getElementById('uploadDesc').textContent = '支援 PNG、JPG、WebP • 壓縮到指定大小';
-                    document.getElementById('uploadHint').textContent = '📦 二分搜尋最佳品質，精準達到目標大小';
-                    document.getElementById('uploadBtn').textContent = '選擇圖片壓縮';
-                } else {
-                    document.getElementById('uploadIcon').textContent = '📁';
-                    document.getElementById('uploadTitle').textContent = '上傳圖片轉換／去背';
-                    document.getElementById('uploadDesc').textContent = '支援 PNG、JPG、WebP • 批次轉換多個檔案';
-                    document.getElementById('uploadHint').textContent = '🎨 開啟「自動去背」可 AI 移除背景再轉換';
-                    document.getElementById('uploadBtn').textContent = '選擇圖片';
-                }
-
-                // Show/hide panels
-                if (mode === 'compress') {
-                    document.getElementById('batchImagesSection').classList.add('hidden');
-                    document.getElementById('settingsPanel').classList.add('hidden');
-                    document.getElementById('downloadSection').classList.add('hidden');
-                    document.getElementById('progressSection').classList.add('hidden');
-                    document.getElementById('compressSettings').classList.remove('hidden');
-                } else {
-                    document.getElementById('compressSettings').classList.add('hidden');
-                    document.getElementById('compressResult').classList.add('hidden');
-                    if (this.images.size > 0) {
-                        document.getElementById('batchImagesSection').classList.remove('hidden');
-                        document.getElementById('settingsPanel').classList.remove('hidden');
-                        if (this.processedResults.size > 0) {
-                            document.getElementById('downloadSection').classList.remove('hidden');
-                        }
-                    }
-                }
-            }
-
-            // ── Compression Methods ──
-            async compressCurrentImage() {
-                if (this.images.size === 0) {
-                    this.showStatus('請先上傳圖片', 'error');
-                    return;
-                }
-                const imageData = this.images.values().next().value;
-                const targetSize = parseFloat(document.getElementById('compressTargetSize').value);
-                const unit = document.getElementById('compressSizeUnit').value;
-                const targetBytes = unit === 'MB' ? targetSize * 1024 * 1024 : targetSize * 1024;
-                const format = document.querySelector('input[name="compressFormat"]:checked').value;
-                const maxWidth = parseInt(document.getElementById('compressMaxWidth').value) || 0;
-                const maxHeight = parseInt(document.getElementById('compressMaxHeight').value) || 0;
-
-                if (!targetSize || targetSize <= 0) {
-                    this.showStatus('請輸入有效的目標大小', 'error');
-                    return;
-                }
-
-                // Check background removal toggle
-                const bgRemovalOn = document.getElementById('compressAutoRemoveBg')?.checked;
-                if (bgRemovalOn && !imageData.debackedImage) {
-                    this.showStatus('⏳ 正在下載模型並進行去背處理...', 'info');
-                    try {
-                        await this.startBatchDebacking();
-                    } catch (err) {
-                        this.showStatus('❌ 去背失敗，改用原始圖片進行壓縮', 'error');
-                    }
-                }
-
-                this.showStatus('⏳ 正在壓縮...', 'info');
-                try {
-                    const sourceImage = (bgRemovalOn && imageData.debackedImage) ? imageData.debackedImage : imageData.image;
-                    const result = await this.compressToTarget(sourceImage, targetBytes, format, maxWidth, maxHeight);
-                    this.compressResultBlob = result.blob;
-                    this.compressResultQuality = result.quality;
-                    this.showCompressResult(imageData, result);
-                    this.showStatus('✅ 壓縮完成！', 'success');
-                } catch (err) {
-                    this.showStatus('❌ 壓縮失敗：' + err.message, 'error');
-                    console.error('Compression error:', err);
-                }
-            }
-
-            async compressToTarget(image, targetBytes, format, maxWidth, maxHeight) {
-                const canvas = document.createElement('canvas');
-                let width = image.width;
-                let height = image.height;
-
-                // Resize if needed
-                if (maxWidth > 0 && width > maxWidth) {
-                    height = height * (maxWidth / width);
-                    width = maxWidth;
-                }
-                if (maxHeight > 0 && height > maxHeight) {
-                    width = width * (maxHeight / height);
-                    height = maxHeight;
-                }
-                width = Math.round(width);
-                height = Math.round(height);
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-
-                // Apply background settings (fallback to white for JPEG)
-                const bgRemovalOn = document.getElementById('compressAutoRemoveBg')?.checked;
-                const bgSetting = document.querySelector('input[name="compressBackground"]:checked')?.value || 'transparent';
-                if (bgSetting === 'white' || (format === 'jpeg' && (bgSetting === 'transparent' || !bgRemovalOn))) {
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(0, 0, width, height);
-                } else if (bgSetting === 'custom') {
-                    ctx.fillStyle = document.getElementById('compressCustomBgColor').value;
-                    ctx.fillRect(0, 0, width, height);
-                }
-
-                ctx.drawImage(image, 0, 0, width, height);
-
-                // If original already under target, return it
-                const originalBlob = await this.encodeToBlob(canvas, format, 0.92);
-                if (originalBlob.size <= targetBytes) {
-                    return { blob: originalBlob, quality: 0.92 };
-                }
-
-                // Binary search for best quality
-                let low = 0.05;
-                let high = 0.92;
-                let bestBlob = null;
-                let bestQuality = 0.05;
-
-                for (let i = 0; i < 12; i++) {
-                    const mid = Math.round((low + high) * 100) / 100;
-                    const blob = await this.encodeToBlob(canvas, format, mid);
-                    if (blob.size <= targetBytes) {
-                        bestBlob = blob;
-                        bestQuality = mid;
-                        low = mid;
-                    } else {
-                        high = mid;
-                    }
-                    if (bestBlob && Math.abs(bestBlob.size - targetBytes) / targetBytes < 0.03) break;
-                }
-
-                if (!bestBlob) {
-                    bestBlob = await this.encodeToBlob(canvas, format, 0.05);
-                    bestQuality = 0.05;
-                }
-                return { blob: bestBlob, quality: bestQuality };
-            }
-
-            encodeToBlob(canvas, format, quality) {
-                return new Promise((resolve) => {
-                    const mimeTypes = { jpeg: 'image/jpeg', webp: 'image/webp', png: 'image/png' };
-                    const mimeType = mimeTypes[format] || 'image/jpeg';
-                    if (format === 'png') {
-                        canvas.toBlob(resolve, 'image/png');
-                    } else {
-                        canvas.toBlob((blob) => resolve(blob), mimeType, quality);
-                    }
-                });
-            }
-
-            showCompressResult(imageData, result) {
-                document.getElementById('compressResult').classList.remove('hidden');
-                const bgRemovalOn = document.getElementById('compressAutoRemoveBg')?.checked;
-                document.getElementById('compressOriginalPreview').src = (bgRemovalOn && imageData.debackedImage) ? imageData.debackedImage.src : imageData.image.src;
-                document.getElementById('compressOriginalSize').textContent = '📄 檔案大小：' + this.formatFileSize(imageData.file.size);
-
-                const url = URL.createObjectURL(result.blob);
-                document.getElementById('compressResultPreview').src = url;
-                document.getElementById('compressResultSize').textContent = '📦 檔案大小：' + this.formatFileSize(result.blob.size);
-                document.getElementById('compressQualityUsed').textContent = '⚙️ 使用品質：' + Math.round(result.quality * 100) + '%';
-
-                if (this._compressPreviewUrl) URL.revokeObjectURL(this._compressPreviewUrl);
-                this._compressPreviewUrl = url;
-
-                const savings = imageData.file.size - result.blob.size;
-                const percent = ((savings / imageData.file.size) * 100).toFixed(1);
-                const savingsEl = document.getElementById('compressSavings');
-                if (savings > 0) {
-                    savingsEl.innerHTML = '<span class="text-green-700 dark:text-green-300 font-semibold text-lg">✅ 節省 ' + this.formatFileSize(savings) + '（' + percent + '%）</span>';
-                } else {
-                    savingsEl.innerHTML = '<span class="text-yellow-600 dark:text-yellow-400 font-semibold text-lg">⚠️ 壓縮後反而變大，建議改用原始檔案</span>';
-                }
-            }
-
-            formatFileSize(bytes) {
-                if (bytes >= 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-                if (bytes >= 1024) return (bytes / 1024).toFixed(1) + ' KB';
-                return bytes + ' B';
-            }
-
-            downloadCompressedImage() {
-                if (!this.compressResultBlob) return;
-                const imageData = this.images.values().next().value;
-                if (!imageData) return;
-                const format = document.querySelector('input[name="compressFormat"]:checked').value;
-                const ext = format === 'jpeg' ? 'jpg' : format;
-                const targetSize = document.getElementById('compressTargetSize').value;
-                const unit = document.getElementById('compressSizeUnit').value;
-                const filename = imageData.name + '_compressed_' + targetSize + unit + '.' + ext;
-                this.downloadBlob(this.compressResultBlob, filename);
-                this.showStatus('✅ 已下載 ' + filename, 'success');
-            }
-
-            showSettingsPanel() {
-                document.getElementById('settingsPanel').classList.remove('hidden');
-            }
-
-            hideAllPanels() {
-                document.getElementById('batchImagesSection').classList.add('hidden');
-                document.getElementById('settingsPanel').classList.add('hidden');
-                document.getElementById('progressSection').classList.add('hidden');
-                document.getElementById('downloadSection').classList.add('hidden');
-                document.getElementById('compressSettings').classList.add('hidden');
-                document.getElementById('compressResult').classList.add('hidden');
-            }
-
-            // ── Auto Background Removal Methods ──
-            getBgRemovalUI() {
-                const isCompress = this.currentMode === 'compress';
-                return {
-                    statusContainer: document.getElementById(isCompress ? 'compressBgRemoveStatus' : 'bgRemoveStatus'),
-                    statusText: document.getElementById(isCompress ? 'compressBgRemoveStatusText' : 'bgRemoveStatus'),
-                    toggle: document.getElementById(isCompress ? 'compressAutoRemoveBg' : 'autoRemoveBg'),
-                    downloadBtn: isCompress ? document.getElementById('compressDownloadDebackedBtn') : null
-                };
-            }
-
-            async loadBgRemovalLibrary() {
-                if (this.bgRemovalLib) return this.bgRemovalLib;
-                if (this.bgRemovalLoading) {
-                    while (this.bgRemovalLoading) {
-                        await new Promise(r => setTimeout(r, 200));
-                    }
-                    return this.bgRemovalLib;
-                }
-                this.bgRemovalLoading = true;
-                const ui = this.getBgRemovalUI();
-                if (ui.statusText) ui.statusText.textContent = '⏳ 正在下載 AI 去背模型（首次約 40MB）...';
-                if (ui.statusContainer) ui.statusContainer.classList.remove('hidden');
-                if (ui.downloadBtn) ui.downloadBtn.classList.add('hidden');
-                try {
-                    const mod = await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal/+esm');
-                    this.bgRemovalLib = mod;
-                    if (ui.statusText) ui.statusText.textContent = '✅ AI 模型已就緒，開始處理圖片...';
-                    return mod;
-                } catch (err) {
-                    if (ui.statusText) ui.statusText.textContent = '❌ AI 模型載入失敗，請檢查網路連線';
-                    console.error('Bg removal load error:', err);
-                    if (ui.toggle) ui.toggle.checked = false;
-                    throw err;
-                } finally {
-                    this.bgRemovalLoading = false;
-                }
-            }
-
-            async removeBackgroundFromImage(imageData) {
-                if (!this.bgRemovalLib) throw new Error('Library not loaded');
-                const card = document.querySelector(`[data-image-id="${imageData.id}"]`);
-                const spinner = card?.querySelector('.deback-spinner');
-                if (spinner) spinner.classList.remove('hidden');
-                const ui = this.getBgRemovalUI();
-                if (ui.downloadBtn) ui.downloadBtn.classList.add('hidden');
-                try {
-                    const blob = await this.bgRemovalLib.removeBackground(imageData.image);
-                    const debackedImage = await this.blobToImage(blob);
-                    imageData.debackedBlob = blob;
-                    imageData.debackedImage = debackedImage;
-                    this.showDebackPreview(imageData);
-                    return debackedImage;
-                } catch (err) {
-                    console.error(`Deback failed for ${imageData.name}:`, err);
-                    if (ui.statusText) ui.statusText.textContent = `❌ ${imageData.name} 去背失敗`;
-                    throw err;
-                } finally {
-                    if (spinner) spinner.classList.add('hidden');
-                }
-            }
-
-            blobToImage(blob) {
-                return new Promise((resolve, reject) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        URL.revokeObjectURL(img.src);
-                        resolve(img);
-                    };
-                    img.onerror = () => {
-                        URL.revokeObjectURL(img.src);
-                        reject(new Error('Failed to load image'));
-                    };
-                    img.src = URL.createObjectURL(blob);
-                });
-            }
-
-            showDebackPreview(imageData) {
-                const card = document.querySelector(`[data-image-id="${imageData.id}"]`);
-                if (!card) return;
-                const preview = card.querySelector('.deback-preview');
-                if (!preview) return;
-                preview.classList.remove('hidden');
-                const canvas = preview.querySelector('canvas');
-                if (!canvas) return;
-                const size = 120;
-                canvas.width = size;
-                canvas.height = size;
-                const ctx = canvas.getContext('2d');
-                this.drawCheckerboard(ctx, size);
-                const img = imageData.debackedImage;
-                const aspect = img.width / img.height;
-                let dw, dh;
-                if (aspect > 1) { dw = size; dh = size / aspect; }
-                else { dw = size * aspect; dh = size; }
-                const dx = (size - dw) / 2;
-                const dy = (size - dh) / 2;
-                ctx.drawImage(img, dx, dy, dw, dh);
-            }
-
-            drawCheckerboard(ctx, size, tileSize = 8) {
-                for (let y = 0; y < size; y += tileSize) {
-                    for (let x = 0; x < size; x += tileSize) {
-                        const light = (Math.floor(x / tileSize) + Math.floor(y / tileSize)) % 2 === 0;
-                        ctx.fillStyle = light ? '#d1d5db' : '#9ca3af';
-                        ctx.fillRect(x, y, tileSize, tileSize);
-                    }
-                }
-            }
-
-            async handleBgRemovalToggle() {
-                const toggle = document.getElementById('autoRemoveBg');
-                if (toggle.checked) {
-                    await this.startBatchDebacking();
-                } else {
-                    this.clearDebackResults();
-                }
-                if (this.images.size > 0) {
-                    clearTimeout(this.debounceTimer);
-                    this.debounceTimer = setTimeout(() => this.updatePreview(), 300);
-                }
-            }
-
-            async handleCompressBgRemovalToggle() {
-                const toggle = document.getElementById('compressAutoRemoveBg');
-                const bgSettings = document.getElementById('compressBgSettingsContainer');
-                if (toggle.checked) {
-                    if (bgSettings) bgSettings.classList.remove('hidden');
-                    await this.startBatchDebacking();
-                } else {
-                    if (bgSettings) bgSettings.classList.add('hidden');
-                    this.clearDebackResults();
-                }
-                
-                // Re-compress if already compressed once
-                if (this.images.size > 0 && !document.getElementById('compressResult').classList.contains('hidden')) {
-                    this.compressCurrentImage();
-                }
-            }
-
-            downloadDebackedOriginalImage() {
-                const imageData = this.images.values().next().value;
-                if (!imageData || !imageData.debackedBlob) return;
-                
-                const filename = imageData.name + '_debacked.png';
-                this.downloadBlob(imageData.debackedBlob, filename);
-                this.showStatus('✅ 已下載 ' + filename, 'success');
-            }
-
-            async startBatchDebacking() {
-                if (this.debackingInProgress) {
-                    // Wait for existing batch to finish
-                    while (this.debackingInProgress) {
-                        await new Promise(r => setTimeout(r, 200));
-                    }
-                    return;
-                }
-                this.debackingInProgress = true;
-                const ui = this.getBgRemovalUI();
-                if (ui.statusContainer) ui.statusContainer.classList.remove('hidden');
-                if (ui.downloadBtn) ui.downloadBtn.classList.add('hidden');
-                try {
-                    await this.loadBgRemovalLibrary();
-                    const entries = Array.from(this.images.entries());
-                    let processed = 0;
-                    for (const [imageId, imageData] of entries) {
-                        if (imageData.debackedImage) { processed++; continue; }
-                        if (ui.statusText) ui.statusText.textContent = `🔄 去背中 ${processed + 1}/${entries.length}: ${imageData.name}`;
-                        try { await this.removeBackgroundFromImage(imageData); processed++; }
-                        catch (e) { /* error logged in removeBackgroundFromImage */ }
-                    }
-                    if (ui.statusText) ui.statusText.textContent = `✅ 去背完成 (${processed}/${entries.length})`;
-                    if (ui.downloadBtn && processed > 0) ui.downloadBtn.classList.remove('hidden');
-                } catch (err) {
-                    if (ui.toggle) ui.toggle.checked = false;
-                } finally {
-                    this.debackingInProgress = false;
-                }
-            }
-
-            clearDebackResults() {
-                this.images.forEach((imageData) => {
-                    if (imageData.debackedBlob) {
-                        URL.revokeObjectURL(imageData.debackedImage?.src || '');
-                    }
-                    imageData.debackedBlob = null;
-                    imageData.debackedImage = null;
-                });
-                document.querySelectorAll('.deback-preview').forEach(el => {
-                    el.classList.add('hidden');
-                    const canvas = el.querySelector('canvas');
-                    if (canvas) { canvas.width = 0; canvas.height = 0; }
-                });
-                document.getElementById('bgRemoveStatus').classList.add('hidden');
-                document.getElementById('compressBgRemoveStatus').classList.add('hidden');
-                document.getElementById('compressDownloadDebackedBtn').classList.add('hidden');
-            }
-
-            // ── End Auto Background Removal Methods ──
-
-            async updatePreview() {
-                if (this.images.size === 0) return;
-
-                this.showProgress();
-                await this.processAllImages();
-                this.showDownloadSection();
-                this.hideProgress();
-            }
-
-            async processAllImages() {
-                const selectedSize = document.querySelector('.size-radio:checked')?.value;
-                const selectedFormat = document.querySelector('.format-radio:checked')?.value;
-
-                if (!selectedSize || !selectedFormat) {
-                    this.showStatus('請選擇尺寸和格式', 'error');
-                    return;
-                }
-
-                // Ensure de-backing is complete if toggle is on
-                if (document.getElementById('autoRemoveBg')?.checked) {
-                    const pendingImages = Array.from(this.images.values()).filter(id => !id.debackedImage);
-                    if (pendingImages.length > 0) {
-                        this.showStatus(`正在完成去背處理 (${pendingImages.length} 張)...`, 'info');
-                        await this.startBatchDebacking();
-                    }
-                }
-
-                // Track conversion start
-                trackEvent('conversion_started', {
-                    format: selectedFormat,
-                    size: selectedSize,
-                    image_count: this.images.size,
-                    background_setting: document.querySelector('input[name="background"]:checked').value,
-                    scaling_method: document.getElementById('scalingMethod').value
-                });
-
-                this.totalProgress = this.images.size;
-                this.currentProgress = 0;
-
-                for (const [imageId, imageData] of this.images) {
-                    const size = parseInt(selectedSize);
-                    const canvas = this.createIconCanvas(imageData, size);
-                    
-                    let result;
-                    if (selectedFormat === 'ico') {
-                        result = await this.generateSingleICO(canvas, size);
-                    } else {
-                        result = await this.canvasToBlob(canvas, selectedFormat);
-                    }
-                    
-                    this.processedResults.set(imageId, {
-                        format: selectedFormat,
-                        size: size,
-                        data: result
-                    });
-                    
-                    this.currentProgress++;
-                    this.updateProgressBar();
-                }
-
-                // Track conversion completion
-                trackEvent('conversion_completed', {
-                    format: selectedFormat,
-                    size: selectedSize,
-                    image_count: this.images.size
-                });
-
-                await this.updatePreviewGrid();
-            }
-
-            createIconCanvas(imageData, size) {
-                const canvas = document.createElement('canvas');
-                canvas.width = size;
-                canvas.height = size;
-                const ctx = canvas.getContext('2d');
-
-                // Use de-backed image if available and toggle is on
-                const bgRemovalOn = document.getElementById('autoRemoveBg')?.checked;
-                const sourceImage = (bgRemovalOn && imageData.debackedImage)
-                    ? imageData.debackedImage
-                    : imageData.image;
-
-                // Apply background settings
-                const bgSetting = document.querySelector('input[name="background"]:checked').value;
-                if (bgSetting === 'white') {
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(0, 0, size, size);
-                } else if (bgSetting === 'custom') {
-                    ctx.fillStyle = document.getElementById('customBgColor').value;
-                    ctx.fillRect(0, 0, size, size);
-                }
-                // If transparent, leave canvas transparent (draw on top of nothing)
-
-                // Apply scaling method
-                const scalingMethod = document.getElementById('scalingMethod').value;
-                this.drawImageWithScaling(ctx, sourceImage, size, scalingMethod);
-
-                return canvas;
-            }
-
-            drawImageWithScaling(ctx, image, size, method) {
-                const imgAspect = image.width / image.height;
-                const canvasAspect = 1; // Square canvas
-                
-                let drawWidth, drawHeight, drawX, drawY;
-
-                switch (method) {
-                    case 'contain':
-                        if (imgAspect > canvasAspect) {
-                            drawWidth = size;
-                            drawHeight = size / imgAspect;
-                        } else {
-                            drawWidth = size * imgAspect;
-                            drawHeight = size;
-                        }
-                        drawX = (size - drawWidth) / 2;
-                        drawY = (size - drawHeight) / 2;
-                        break;
-                        
-                    case 'cover':
-                        if (imgAspect > canvasAspect) {
-                            drawWidth = size * imgAspect;
-                            drawHeight = size;
-                        } else {
-                            drawWidth = size;
-                            drawHeight = size / imgAspect;
-                        }
-                        drawX = (size - drawWidth) / 2;
-                        drawY = (size - drawHeight) / 2;
-                        break;
-                        
-                    case 'fill':
-                        drawWidth = size;
-                        drawHeight = size;
-                        drawX = 0;
-                        drawY = 0;
-                        break;
-                        
-                    case 'center':
-                        drawWidth = image.width;
-                        drawHeight = image.height;
-                        drawX = (size - drawWidth) / 2;
-                        drawY = (size - drawHeight) / 2;
-                        break;
-                }
-
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
-            }
-
-            async canvasToBlob(canvas, format) {
-                return new Promise((resolve) => {
-                    const mimeType = format === 'webp' ? 'image/webp' : 'image/png';
-                    canvas.toBlob((blob) => {
-                        // WebP fallback for Safari
-                        if (!blob && format === 'webp') {
-                            canvas.toBlob(resolve, 'image/png', 0.9);
-                        } else {
-                            resolve(blob);
-                        }
-                    }, mimeType, 0.9);
-                });
-            }
-
-            async generateSingleICO(canvas, size) {
-                return new Promise((resolve) => {
-                    canvas.toBlob((blob) => {
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                            const imageData = new Uint8Array(reader.result);
-                            const icoBlob = this.buildSimpleICOFile(imageData, size);
-                            resolve(icoBlob);
-                        };
-                        reader.readAsArrayBuffer(blob);
-                    }, 'image/png');
-                });
-            }
-
-            buildSimpleICOFile(imageData, size) {
-                const headerSize = 6 + 16; // Header + one directory entry
-                const totalSize = headerSize + imageData.length;
-
-                const buffer = new ArrayBuffer(totalSize);
-                const view = new DataView(buffer);
-                const uint8View = new Uint8Array(buffer);
-                
-                // ICO header
-                view.setUint16(0, 0, true); // Reserved
-                view.setUint16(2, 1, true); // Type (1 = ICO)
-                view.setUint16(4, 1, true); // Number of images (1)
-
-                // Directory entry
-                const displaySize = size === 256 ? 0 : size; // 256 is stored as 0
-                view.setUint8(6, displaySize); // Width
-                view.setUint8(7, displaySize); // Height
-                view.setUint8(8, 0); // Color palette
-                view.setUint8(9, 0); // Reserved
-                view.setUint16(10, 1, true); // Color planes
-                view.setUint16(12, 32, true); // Bits per pixel
-                view.setUint32(14, imageData.length, true); // Image size
-                view.setUint32(18, headerSize, true); // Image offset
-
-                // Image data
-                uint8View.set(imageData, headerSize);
-
-                return new Blob([buffer], { type: 'image/x-icon' });
-            }
-
-            async updatePreviewGrid() {
-                const previewGrid = document.getElementById('previewGrid');
-                previewGrid.innerHTML = '';
-
-                // Show preview for all processed images
-                this.images.forEach((imageData, imageId) => {
-                    const result = this.processedResults.get(imageId);
-                    
-                    if (result) {
-                        // Generate the display filename using the same logic as download
-                        const displayFileName = this.generateUniqueFileName(imageId, result);
-                        
-                        const previewItem = document.createElement('div');
-                        previewItem.className = 'text-center';
-                        previewItem.innerHTML = `
-                            <div class="bg-white dark:bg-gray-600 p-2 rounded-lg shadow-sm border dark:border-gray-500">
-                                <canvas width="${result.size}" height="${result.size}" class="mx-auto" style="max-width: ${Math.min(result.size, 64)}px; max-height: ${Math.min(result.size, 64)}px; image-rendering: pixelated;"></canvas>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" title="${displayFileName}">${displayFileName.length > 20 ? displayFileName.substring(0, 17) + '...' : displayFileName}</p>
-                                <p class="text-xs text-gray-400 dark:text-gray-500">${result.size}×${result.size} ${result.format.toUpperCase()}</p>
-                            </div>
-                        `;
-                        
-                        const previewCanvas = previewItem.querySelector('canvas');
-                        const ctx = previewCanvas.getContext('2d');
-                        
-                        // Create a temporary canvas from the image for preview
-                        const tempCanvas = this.createIconCanvas(imageData, result.size);
-                        ctx.drawImage(tempCanvas, 0, 0);
-                        
-                        previewGrid.appendChild(previewItem);
-                    }
-                });
-            }
-
-            showProgress() {
-                document.getElementById('progressSection').classList.remove('hidden');
-                this.updateProgressBar();
-            }
-
-            hideProgress() {
-                document.getElementById('progressSection').classList.add('hidden');
-            }
-
-            updateProgressBar() {
-                const percentage = this.totalProgress > 0 ? Math.round((this.currentProgress / this.totalProgress) * 100) : 0;
-                document.getElementById('progressBar').style.width = `${percentage}%`;
-                document.getElementById('progressText').textContent = `${percentage}%`;
-                document.getElementById('progressDetails').textContent = 
-                    `處理中 ${this.currentProgress} / ${this.totalProgress} 項目`;
-            }
-
-            showDownloadSection() {
-                document.getElementById('downloadSection').classList.remove('hidden');
-                this.generateDownloadButtons();
-            }
-
-            generateDownloadButtons() {
-                const downloadButtons = document.getElementById('downloadButtons');
-                downloadButtons.innerHTML = '';
-
-                // Add batch download button if multiple images
-                if (this.images.size > 1) {
-                    const batchButton = document.createElement('button');
-                    batchButton.className = 'w-full bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white px-4 py-3 rounded-lg font-bold transition-colors mb-4 text-lg';
-                    batchButton.textContent = `⚡ 一鍵下載全部 (${this.images.size} 個檔案)`;
-                    batchButton.onclick = () => this.downloadAllImages();
-                    downloadButtons.appendChild(batchButton);
-                    
-                    // Add separator
-                    const separator = document.createElement('div');
-                    separator.className = 'border-t border-gray-200 dark:border-gray-600 my-4';
-                    downloadButtons.appendChild(separator);
-                }
-
-                // Generate individual download buttons for each image
-                this.images.forEach((imageData, imageId) => {
-                    const result = this.processedResults.get(imageId);
-                    if (result) {
-                        const button = document.createElement('button');
-                        const formatInfo = {
-                            ico: { emoji: '📦', name: 'ICO', color: 'blue' },
-                            png: { emoji: '🖼️', name: 'PNG', color: 'green' },
-                            webp: { emoji: '🚀', name: 'WebP', color: 'orange' }
-                        };
-                        
-                        const info = formatInfo[result.format];
-                        const displayFileName = this.generateUniqueFileName(imageId, result);
-                        button.className = `w-full bg-${info.color}-600 hover:bg-${info.color}-700 dark:bg-${info.color}-500 dark:hover:bg-${info.color}-600 text-white px-4 py-2 rounded-lg font-medium transition-colors mb-2`;
-                        button.textContent = `${info.emoji} 下載 ${displayFileName}`;
-                        button.onclick = () => this.downloadSingleImage(imageId);
-                        downloadButtons.appendChild(button);
-                    }
-                });
-            }
-
-            async downloadSingleImage(imageId) {
-                const imageData = this.images.get(imageId);
-                const result = this.processedResults.get(imageId);
-                
-                if (!result) {
-                    this.showStatus('請先處理圖片', 'error');
-                    return;
-                }
-
-                const fileName = this.generateUniqueFileName(imageId, result);
-
-                this.downloadBlob(result.data, fileName);
-                
-                // Track download
-                trackEvent('file_download', {
-                    format: result.format,
-                    size: result.size,
-                    filename: fileName,
-                    custom_name_used: !!document.getElementById('customFileName').value,
-                    size_in_name: document.getElementById('addSizeToName').checked
-                });
-                
-                this.showStatus(`已下載 ${fileName}`, 'success');
-            }
-
-            async downloadAllImages() {
-                if (this.images.size === 0) {
-                    this.showStatus('沒有可下載的圖片', 'error');
-                    return;
-                }
-
-                const imageIds = Array.from(this.images.keys());
-                let downloadCount = 0;
-                
-                // Show progress
-                this.showStatus(`開始批次下載 ${imageIds.length} 個檔案...`, 'info');
-                
-                // Download each image with a small delay to avoid browser blocking
-                for (const imageId of imageIds) {
-                    const result = this.processedResults.get(imageId);
-                    if (result) {
-                        const fileName = this.generateUniqueFileName(imageId, result);
-                        
-                        // Add small delay between downloads
-                        if (downloadCount > 0) {
-                            await new Promise(resolve => setTimeout(resolve, 200));
-                        }
-                        
-                        this.downloadBlob(result.data, fileName);
-                        downloadCount++;
-                        
-                        // Update status
-                        this.showStatus(`正在下載 ${downloadCount}/${imageIds.length}: ${fileName}`, 'info');
-                    }
-                }
-                
-                // Track batch download
-                trackEvent('batch_download', {
-                    file_count: downloadCount,
-                    format: document.querySelector('.format-radio:checked')?.value,
-                    size: document.querySelector('.size-radio:checked')?.value
-                });
-                
-                this.showStatus(`✅ 批次下載完成！已下載 ${downloadCount} 個檔案`, 'success');
-            }
-
-            generateUniqueFileName(imageId, result) {
-                const customName = document.getElementById('customFileName').value;
-                const addSize = document.getElementById('addSizeToName').checked;
-                
-                // Get base name
-                let baseName;
-                if (customName) {
-                    baseName = this.sanitizeFilename(customName);
-                } else {
-                    const imageData = this.images.get(imageId);
-                    baseName = this.sanitizeFilename(imageData.name);
-                }
-                
-                // Add numbering for multiple images when using custom name
-                if (customName && this.images.size > 1) {
-                    const imageIds = Array.from(this.images.keys());
-                    const imageIndex = imageIds.indexOf(imageId);
-                    baseName = `${baseName}_${imageIndex + 1}`;
-                }
-                
-                // Add size if requested
-                if (addSize) {
-                    baseName = `${baseName}_${result.size}x${result.size}`;
-                }
-                
-                return `${baseName}.${result.format}`;
-            }
-
-            sanitizeFilename(filename) {
-                // Remove or replace invalid characters for Windows/Mac
-                return filename.replace(/[\\/:*?"<>|]/g, '_').trim();
-            }
-
-            async startConversion() {
-                const convertButton = document.getElementById('convertButton');
-                const originalText = convertButton.textContent;
-                
-                // Show loading state
-                convertButton.disabled = true;
-                convertButton.textContent = '⏳ 轉換中...';
-                convertButton.className = convertButton.className.replace('hover:scale-105', '');
-                
-                try {
-                    await this.updatePreview();
-                    
-                    // Show success state
-                    convertButton.textContent = '✅ 轉換完成！';
-                    convertButton.className = convertButton.className.replace('bg-blue-600 hover:bg-blue-700', 'bg-green-600');
-                    
-                    setTimeout(() => {
-                        convertButton.disabled = false;
-                        convertButton.textContent = originalText;
-                        convertButton.className = convertButton.className.replace('bg-green-600', 'bg-blue-600 hover:bg-blue-700');
-                        convertButton.className += ' transform hover:scale-105';
-                    }, 2000);
-                    
-                } catch (error) {
-                    // Show error state
-                    convertButton.textContent = '❌ 轉換失敗';
-                    convertButton.className = convertButton.className.replace('bg-blue-600 hover:bg-blue-700', 'bg-red-600');
-                    
-                    // Track conversion error
-                    trackEvent('conversion_error', {
-                        error_message: error.message
-                    });
-                    
-                    setTimeout(() => {
-                        convertButton.disabled = false;
-                        convertButton.textContent = originalText;
-                        convertButton.className = convertButton.className.replace('bg-red-600', 'bg-blue-600 hover:bg-blue-700');
-                        convertButton.className += ' transform hover:scale-105';
-                    }, 2000);
-                }
-            }
-
-            downloadBlob(blob, filename) {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }
-
-            showStatus(message, type) {
-                const statusEl = document.getElementById('statusMessage');
-                statusEl.textContent = message;
-                statusEl.className = `mt-6 p-4 rounded-lg text-center ${
-                    type === 'success' ? 'bg-green-100 text-green-800' :
-                    type === 'error' ? 'bg-red-100 text-red-800' :
-                    'bg-blue-100 text-blue-800'
-                }`;
-                statusEl.classList.remove('hidden');
-                
-                if (type === 'success' || type === 'error') {
-                    setTimeout(() => {
-                        statusEl.classList.add('hidden');
-                    }, 3000);
-                }
-            }
-        }
-
-        // Global converter instance
-        let converter;
-
-        // Initialize the converter when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            converter = new AdvancedImageConverter();
-            
-            // Add process button to settings panel
-            const settingsPanel = document.getElementById('settingsPanel');
-            const processButton = document.createElement('div');
-            processButton.className = 'text-center mt-6';
-            processButton.innerHTML = `
-                <button id="convertButton" onclick="converter.startConversion()" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-lg transition-all transform hover:scale-105">
-                    🚀 開始轉換
-                </button>
-            `;
-            settingsPanel.appendChild(processButton);
-        });
-
-        // Add keyboard shortcut hint
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'v') {
-                const hint = document.createElement('div');
-                hint.textContent = '正在檢查剪貼簿...';
-                hint.className = 'fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg pulse-animation z-50';
-                document.body.appendChild(hint);
-                
-                setTimeout(() => {
-                    if (document.body.contains(hint)) {
-                        document.body.removeChild(hint);
-                    }
-                }, 2000);
-            }
-        });
-    </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9755a16f73f34a9e',t:'MTc1NjIzNTQ0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-
-<!-- 頁面底部 -->
-<footer style="width:100%;text-align:center;padding:24px 0 12px 0;font-size:1em;color:#555;background:#f7f7f7;">
-   🛠️ PicTool 圖片工具箱 — 免費開源 · <a href="https://github.com/Sid-1996/pictool" target="_blank" rel="noopener" style="color:#1976d2;text-decoration:underline;">GitHub</a> · 使用 MIT License
-</footer>
+    <!-- Footer -->
+    <footer style="width:100%;text-align:center;padding:24px 0 12px 0;font-size:1em;color:#555;background:#f7f7f7;">
+        🛠️ PicTool 圖片工具箱 — 免費開源 · <a href="https://github.com/Sid-1996/pictool" target="_blank" rel="noopener" style="color:#1976d2;text-decoration:underline;">GitHub</a> · 使用 MIT License
+    </footer>
+
+    <!-- Main Application Script (ES Module) -->
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>

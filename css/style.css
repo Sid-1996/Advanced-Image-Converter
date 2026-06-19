@@ -1,0 +1,128 @@
+/* ===== Upload Zone ===== */
+.upload-zone {
+    border: 2px dashed #cbd5e1;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.upload-zone.dragover {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    transform: scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+.dark .upload-zone.dragover {
+    background-color: #1e3a8a;
+    border-color: #60a5fa;
+}
+
+/* ===== Preview Grid ===== */
+.preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 12px;
+}
+
+/* ===== Radio Button Styles (Size / Format) ===== */
+.size-radio:checked + label,
+.format-radio:checked + label {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+.dark .size-radio:checked + label,
+.dark .format-radio:checked + label {
+    background-color: #60a5fa;
+    color: #1f2937;
+    border-color: #60a5fa;
+}
+
+/* ===== Compress Format Radios ===== */
+.compress-format-radio:checked + label {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+.compress-format-radio:checked + label span {
+    color: white;
+}
+.dark .compress-format-radio:checked + label {
+    background-color: #60a5fa;
+    color: #1f2937;
+    border-color: #60a5fa;
+}
+.dark .compress-format-radio:checked + label span {
+    color: #1f2937;
+}
+
+/* ===== Progress Bar ===== */
+.progress-bar {
+    transition: width 0.3s ease;
+}
+
+/* ===== Image Cards ===== */
+.image-card {
+    transition: all 0.3s ease;
+}
+.image-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Toggle Switch (Checkbox) ===== */
+.toggle-checkbox:checked + .toggle-label .toggle-dot {
+    transform: translateX(1.5rem);
+}
+.toggle-checkbox:checked + .toggle-label .toggle-bg {
+    background-color: #3b82f6;
+}
+.dark .toggle-checkbox:checked + .toggle-label .toggle-bg {
+    background-color: #60a5fa;
+}
+
+/* ===== Animations ===== */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* ===== Mode Tabs ===== */
+.mode-tab {
+    transition: all 0.3s ease;
+}
+.mode-tab.active {
+    background-color: #3b82f6;
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+.dark .mode-tab.active {
+    background-color: #60a5fa;
+    color: #1f2937;
+}
+.mode-tab:not(.active) {
+    color: #4b5563;
+}
+.dark .mode-tab:not(.active) {
+    color: #9ca3af;
+}
+.mode-tab:not(.active):hover {
+    background-color: #f3f4f6;
+}
+.dark .mode-tab:not(.active):hover {
+    background-color: #374151;
+}
