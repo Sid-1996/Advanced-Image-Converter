@@ -44,24 +44,26 @@ export class BackgroundRemover {
      * @returns {Promise<Blob>} 去背後的 PNG Blob
      */
     async removeBackground(image, options = {}) {
-        const lib = await this.loadLibrary();
-        if (!lib || typeof lib.removeBackground !== 'function') {
-            throw new Error('去背函式庫未正確載入');
-        }
-
-        try {
-            // 傳入圖片元素或 URL
-            const result = await lib.removeBackground(image, {
-                progress: options.onProgress || (() => {}),
-                // 可調整參數以提升效能
-                model: 'isnet'
-            });
-            return result;
-        } catch (err) {
-            console.error('Remove background error:', err);
-            throw new Error('去背處理失敗: ' + (err.message || '未知錯誤'));
-        }
+    const lib = await this.loadLibrary();
+    if (!lib || typeof lib.removeBackground !== 'function') {
+        throw new Error('去背函式庫未正確載入');
     }
+
+    try {
+        // ✅ 關鍵修正：將 HTMLImageElement 轉為 data URL 字符串
+        // 如果 image 是 HTMLImageElement，取其 src；否則保持原樣（可能已是 Blob 或 URL）
+        const imageInput = (image instanceof HTMLImageElement) ? image.src : image;
+
+        const result = await lib.removeBackground(imageInput, {
+            progress: options.onProgress || (() => {}),
+            model: 'isnet'   // 已修正為合法值
+        });
+        return result;
+    } catch (err) {
+        console.error('Remove background error:', err);
+        throw new Error('去背處理失敗: ' + (err.message || '未知錯誤'));
+    }
+}
 
     /**
      * 檢查函式庫是否已載入
