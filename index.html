@@ -169,24 +169,6 @@
                 </div>
             </div>
 
-            <!-- Auto Background Removal -->
-            <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
-                <label class="flex items-center justify-between cursor-pointer">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2"><span class="text-md font-medium text-gray-700 dark:text-gray-300">🎨 自動去背</span><span class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-medium">AI</span></div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">使用 AI 自動移除圖片背景，再套用下方背景設定</p>
-                    </div>
-                    <div class="relative ml-4 flex-shrink-0">
-                        <input type="checkbox" id="autoRemoveBg" class="toggle-checkbox hidden">
-                        <label for="autoRemoveBg" class="toggle-label flex items-center cursor-pointer">
-                            <div class="toggle-bg w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full shadow-inner transition-colors duration-300"></div>
-                            <div class="toggle-dot absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300"></div>
-                        </label>
-                    </div>
-                </label>
-                <div id="bgRemoveStatus" class="text-xs text-gray-500 dark:text-gray-400 mt-2 hidden"></div>
-            </div>
-
             <!-- File Naming -->
             <div class="mb-4">
                 <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">檔案命名</h4>
@@ -199,6 +181,59 @@
             <!-- Convert Button -->
             <div class="text-center mt-6">
                 <button id="convertButton" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold text-lg shadow-lg transition-all transform hover:scale-105">🚀 開始轉換</button>
+            </div>
+        </div>
+
+        <!-- AI 去背面板（兩模式共用） -->
+        <div id="debackPanel" class="hidden bg-white dark:bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">🎨 AI 自動去背</span>
+                    <span class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-medium">AI</span>
+                </div>
+                <div class="relative flex-shrink-0">
+                    <input type="checkbox" id="debackToggle" class="toggle-checkbox hidden">
+                    <label for="debackToggle" class="toggle-label flex items-center cursor-pointer">
+                        <div class="toggle-bg w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full shadow-inner transition-colors duration-300"></div>
+                        <div class="toggle-dot absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300"></div>
+                    </label>
+                </div>
+            </div>
+
+            <div id="debackProgressArea" class="hidden mb-4">
+                <div class="flex justify-between items-center mb-1">
+                    <span id="debackProgressText" class="text-sm text-gray-600 dark:text-gray-300">處理中...</span>
+                    <span id="debackProgressPercent" class="text-sm text-gray-500 dark:text-gray-400">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                    <div id="debackProgressBar" class="progress-bar bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div id="debackPreviewArea" class="hidden grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">📄 原圖</div>
+                    <div class="aspect-square bg-white dark:bg-gray-600 rounded-lg overflow-hidden">
+                        <img id="debackOriginalImg" class="w-full h-full object-contain">
+                    </div>
+                    <div id="debackOriginalInfo" class="text-xs text-gray-400 mt-1"></div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">🔍 去背結果</div>
+                    <div class="aspect-square bg-white dark:bg-gray-600 rounded-lg overflow-hidden relative">
+                        <canvas id="debackResultCanvas" class="w-full h-full"></canvas>
+                        <div id="debackSpinner" class="hidden absolute inset-0 flex items-center justify-center bg-black/10 dark:bg-black/30 rounded-lg">
+                            <div class="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="debackFooter" class="hidden">
+                <div class="flex items-center justify-between">
+                    <span id="debackCompleteStatus" class="text-sm font-medium text-green-600 dark:text-green-400"></span>
+                    <button id="debackDownloadBtn" class="hidden bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg shadow-sm font-medium transition-all">📥 下載去背原圖</button>
+                </div>
             </div>
         </div>
 
@@ -248,33 +283,15 @@
                     <div><input type="radio" id="cfPng" class="compress-format-radio hidden" name="compressFormat" value="png"><label for="cfPng" class="block text-center py-3 px-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 text-gray-700 dark:text-gray-300">PNG</label></div>
                 </div>
             </div>
-            <div class="mb-5 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
-                <label class="flex items-center justify-between cursor-pointer">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2"><span class="text-md font-medium text-gray-700 dark:text-gray-300">🎨 自動去背</span><span class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-medium">AI</span></div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">使用 AI 自動移除圖片背景，再進行壓縮</p>
-                    </div>
-                    <div class="relative ml-4 flex-shrink-0">
-                        <input type="checkbox" id="compressAutoRemoveBg" class="toggle-checkbox hidden">
-                        <label for="compressAutoRemoveBg" class="toggle-label flex items-center cursor-pointer">
-                            <div class="toggle-bg w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full shadow-inner transition-colors duration-300"></div>
-                            <div class="toggle-dot absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300"></div>
-                        </label>
-                    </div>
-                </label>
-                <div id="compressBgRemoveStatus" class="text-xs text-gray-500 dark:text-gray-400 mt-2 hidden flex items-center justify-between flex-wrap gap-2">
-                    <span id="compressBgRemoveStatusText"></span>
-                    <button id="compressDownloadDebackedBtn" class="hidden bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-sm font-medium transition-all">📥 下載去背原圖</button>
+            <!-- 背景處理（去背用，獨立出來） -->
+            <div id="compressDebackBgSection" class="hidden mb-5 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                <h4 class="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">背景處理</h4>
+                <div class="flex flex-wrap gap-4 text-sm">
+                    <label class="flex items-center cursor-pointer"><input type="radio" name="compressBackground" value="transparent" checked class="mr-2 cursor-pointer"><span class="text-gray-700 dark:text-gray-300">保留透明背景</span></label>
+                    <label class="flex items-center cursor-pointer"><input type="radio" name="compressBackground" value="white" class="mr-2 cursor-pointer"><span class="text-gray-700 dark:text-gray-300">白色背景</span></label>
+                    <label class="flex items-center cursor-pointer"><input type="radio" name="compressBackground" value="custom" class="mr-2 cursor-pointer"><span class="text-gray-700 dark:text-gray-300">自訂顏色：</span><input type="color" id="compressCustomBgColor" value="#ffffff" class="ml-2 w-8 h-8 rounded border cursor-pointer"></label>
                 </div>
-                <div id="compressBgSettingsContainer" class="hidden mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                    <h4 class="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">背景處理</h4>
-                    <div class="flex flex-wrap gap-4 text-sm">
-                        <label class="flex items-center cursor-pointer"><input type="radio" name="compressBackground" value="transparent" checked class="mr-2 cursor-pointer"><span class="text-gray-700 dark:text-gray-300">保留透明背景</span></label>
-                        <label class="flex items-center cursor-pointer"><input type="radio" name="compressBackground" value="white" class="mr-2 cursor-pointer"><span class="text-gray-700 dark:text-gray-300">白色背景</span></label>
-                        <label class="flex items-center cursor-pointer"><input type="radio" name="compressBackground" value="custom" class="mr-2 cursor-pointer"><span class="text-gray-700 dark:text-gray-300">自訂顏色：</span><input type="color" id="compressCustomBgColor" value="#ffffff" class="ml-2 w-8 h-8 rounded border cursor-pointer"></label>
-                    </div>
-                    <p id="compressJpegWarning" class="text-xs text-yellow-600 dark:text-yellow-400 mt-2 hidden">⚠️ JPEG 格式不支援透明背景，將以白色背景輸出</p>
-                </div>
+                <p id="compressJpegWarning" class="text-xs text-yellow-600 dark:text-yellow-400 mt-2 hidden">⚠️ JPEG 格式不支援透明背景，將以白色背景輸出</p>
             </div>
             <div class="mb-5">
                 <h4 class="text-md font-medium text-gray-600 dark:text-gray-300 mb-3">最大尺寸 <span class="text-xs text-gray-400 font-normal">（選填，先縮圖再壓縮）</span></h4>

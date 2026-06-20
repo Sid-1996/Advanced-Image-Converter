@@ -97,8 +97,7 @@ class App {
         document.getElementById('compressButton')?.addEventListener('click', () => this.compressCurrentImage());
 
         // ---- 去背切換 ----
-        ui.el.autoRemoveBg?.addEventListener('change', () => this.handleBgRemovalToggle(false));
-        ui.el.compressAutoRemoveBg?.addEventListener('change', () => this.handleBgRemovalToggle(true));
+        ui.el.debackToggle?.addEventListener('change', () => this.handleBgRemovalToggle());
 
         // ---- 下載按鈕 (事件委託) ----
         ui.el.downloadButtons.addEventListener('click', (e) => {
@@ -119,8 +118,8 @@ class App {
             }
         });
 
-        // ---- 壓縮去背後下載原圖 ----
-        ui.el.compressDownloadDebackedBtn?.addEventListener('click', () => {
+        // ---- 去背後下載原圖 ----
+        ui.el.debackDownloadBtn?.addEventListener('click', () => {
             this.downloadDebackedOriginal();
         });
 
@@ -152,7 +151,7 @@ class App {
             ui.el.customBgColor,
             ui.el.customFileName,
             ui.el.addSizeToName,
-            ui.el.autoRemoveBg
+            ui.el.debackToggle
         ].filter(el => el);
 
         let debounceTimer = null;
@@ -210,10 +209,8 @@ class App {
         this.updateUIAfterFileChange();
 
         // 自動執行去背 (若開關已開啟)
-        const isCompress = this.ui.currentMode === 'compress';
-        const toggle = isCompress ? this.ui.el.compressAutoRemoveBg : this.ui.el.autoRemoveBg;
-        if (toggle?.checked) {
-            await this.startBatchDebacking(isCompress);
+        if (this.ui.el.debackToggle?.checked) {
+            await this.startBatchDebacking();
         }
 
         // 壓縮模式自動執行壓縮
@@ -245,6 +242,8 @@ class App {
         this.fileHandler.clearAll();
         this.processedResults.clear();
         this.ui.hideCompressResult();
+        this.ui.hideDebackPanel();
+        this.ui.el.compressDebackBgSection?.classList.add('hidden');
         this.updateUIAfterFileChange();
         this.ui.hideDownloadSection();
         this.ui.hideStatus();
@@ -272,6 +271,7 @@ class App {
         const count = this.fileHandler.getCount();
         
         if (mode === 'convert') {
+            this.ui.el.compressDebackBgSection?.classList.add('hidden');
             if (count > 0) {
                 this.ui.el.settingsPanel.classList.remove('hidden');
                 this.ui.updateImageDisplay(this.fileHandler.images);
@@ -287,6 +287,9 @@ class App {
             this.ui.el.downloadSection.classList.add('hidden');
             this.ui.el.progressSection.classList.add('hidden');
             this.ui.el.batchSection.classList.add('hidden'); // 壓縮模式不顯示批次列表
+            if (this.ui.el.debackToggle?.checked) {
+                this.ui.el.compressDebackBgSection?.classList.remove('hidden');
+            }
             if (count > 0) {
                 this.compressCurrentImage();
             }
@@ -334,11 +337,11 @@ class App {
         const bgSetting = document.querySelector('input[name="background"]:checked')?.value || 'transparent';
         const customBg = this.ui.el.customBgColor?.value || '#ffffff';
         const scaling = this.ui.el.scalingMethod?.value || 'contain';
-        const useDebacked = this.ui.el.autoRemoveBg?.checked || false;
+        const useDebacked = this.ui.el.debackToggle?.checked || false;
 
         // 確保去背完成
         if (useDebacked) {
-            await this.startBatchDebacking(false);
+            await this.startBatchDebacking();
         }
 
         this.processedResults.clear();
@@ -501,9 +504,9 @@ class App {
             }
 
             // 確保去背完成
-            const bgRemovalOn = this.ui.el.compressAutoRemoveBg?.checked || false;
+            const bgRemovalOn = this.ui.el.debackToggle?.checked || false;
             if (bgRemovalOn && !data.debackedImage) {
-                await this.startBatchDebacking(true);
+                await this.startBatchDebacking();
             }
 
             const sourceImage = (bgRemovalOn && data.debackedImage) ? data.debackedImage : data.image;
@@ -557,16 +560,19 @@ class App {
     }
 
     // ===== 去背功能 =====
-    async handleBgRemovalToggle(isCompress) {
-        const toggle = isCompress ? this.ui.el.compressAutoRemoveBg : this.ui.el.autoRemoveBg;
-        if (toggle?.checked) {
-            await this.startBatchDebacking(isCompress);
+    async handleBgRemovalToggle() {
+        if (this.ui.el.debackToggle?.checked) {
+            this.ui.showDebackPanel();
+            if (this.ui.currentMode === 'compress') {
+                this.ui.el.compressDebackBgSection?.classList.remove('hidden');
+            }
+            await this.startBatchDebacking();
         } else {
-            this.clearDebackResults(isCompress);
+            this.clearDebackResults();
         }
     }
 
-    async startBatchDebacking(isCompress) {
+    async startBatchDebacking() {
         if (this.debackingInProgress) {
             while (this.debackingInProgress) {
                 await new Promise(r => setTimeout(r, 200));
@@ -576,7 +582,9 @@ class App {
 
         this.debackingInProgress = true;
         const ui = this.ui;
-        ui.updateBgStatus(isCompress, '⏳ 正在下載 AI 去背模型（首次約 40MB）...', false);
+        ui.showDebackPanel();
+        ui.setDebackLoading();
+        ui.el.debackProgressText.textContent = '⏳ 正在下載 AI 去背模型（首次約 40MB）...';
 
         try {
             await this.backgroundRemover.loadLibrary();
@@ -590,57 +598,38 @@ class App {
                 }
                 if (!data.image) continue;
 
-                ui.updateBgStatus(isCompress, `🔄 去背中 ${processed + 1}/${entries.length}: ${data.name}`, false);
-                
+                ui.updateDebackProgress(processed + 1, entries.length, data.name);
+
                 try {
                     const blob = await this.backgroundRemover.removeBackground(data.image);
                     const img = await this.imageProcessor.blobToImage(blob);
                     data.debackedBlob = blob;
                     data.debackedImage = img;
-                    this.showDebackPreview(data);
+
+                    const originalInfo = `${data.image.width} × ${data.image.height}`;
+                    ui.showDebackPreview(data.image.src, originalInfo, img);
                     processed++;
                 } catch (err) {
                     console.error(`Deback failed for ${data.name}:`, err);
                 }
             }
 
-            ui.updateBgStatus(isCompress, `✅ 去背完成 (${processed}/${entries.length})`, processed > 0);
+            ui.showDebackComplete(`✅ 去背完成 (${processed}/${entries.length})`, processed > 0);
+            if (processed > 0) {
+                this.ui.showStatus('✅ 去背完成！', 'success');
+            }
 
         } catch (err) {
             console.error('Batch deback error:', err);
-            const toggle = isCompress ? this.ui.el.compressAutoRemoveBg : this.ui.el.autoRemoveBg;
-            if (toggle) toggle.checked = false;
-            ui.updateBgStatus(isCompress, '❌ 去背失敗: ' + err.message, false);
+            if (this.ui.el.debackToggle) this.ui.el.debackToggle.checked = false;
+            ui.showDebackComplete('❌ 去背失敗: ' + err.message, false);
+            this.ui.showStatus('❌ 去背失敗：' + err.message, 'error');
         } finally {
             this.debackingInProgress = false;
         }
     }
 
-    showDebackPreview(data) {
-        const card = document.querySelector(`[data-image-id="${data.id}"]`);
-        if (!card) return;
-        const preview = card.querySelector('.deback-preview');
-        if (!preview) return;
-        preview.classList.remove('hidden');
-        const canvas = preview.querySelector('canvas');
-        if (!canvas) return;
-        const size = 120;
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
-        this.imageProcessor.drawCheckerboard(ctx, size);
-        const img = data.debackedImage;
-        if (!img) return;
-        const aspect = img.width / img.height;
-        let dw, dh;
-        if (aspect > 1) { dw = size; dh = size / aspect; }
-        else { dw = size * aspect; dh = size; }
-        const dx = (size - dw) / 2;
-        const dy = (size - dh) / 2;
-        ctx.drawImage(img, dx, dy, dw, dh);
-    }
-
-    clearDebackResults(isCompress) {
+    clearDebackResults() {
         for (const [id, data] of this.fileHandler.images) {
             if (data.debackedImage) {
                 URL.revokeObjectURL(data.debackedImage.src);
@@ -648,13 +637,8 @@ class App {
             data.debackedBlob = null;
             data.debackedImage = null;
         }
-        // 隱藏所有去背預覽
-        document.querySelectorAll('.deback-preview').forEach(el => {
-            el.classList.add('hidden');
-            const canvas = el.querySelector('canvas');
-            if (canvas) { canvas.width = 0; canvas.height = 0; }
-        });
-        this.ui.hideBgStatus(isCompress);
+        this.ui.hideDebackPanel();
+        this.ui.el.compressDebackBgSection?.classList.add('hidden');
     }
 
     downloadDebackedOriginal() {

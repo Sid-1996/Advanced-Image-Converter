@@ -40,14 +40,22 @@ export class UIManager {
             compressDownloadBtn: document.getElementById('compressDownloadBtn'),
 
             statusMessage: document.getElementById('statusMessage'),
-            
-            // 去背相關
-            bgRemoveStatus: document.getElementById('bgRemoveStatus'),
-            compressBgRemoveStatus: document.getElementById('compressBgRemoveStatus'),
-            compressBgRemoveStatusText: document.getElementById('compressBgRemoveStatusText'),
-            compressDownloadDebackedBtn: document.getElementById('compressDownloadDebackedBtn'),
-            compressBgSettingsContainer: document.getElementById('compressBgSettingsContainer'),
-            compressJpegWarning: document.getElementById('compressJpegWarning'),
+
+            // 去背面板
+            debackPanel: document.getElementById('debackPanel'),
+            debackToggle: document.getElementById('debackToggle'),
+            debackProgressArea: document.getElementById('debackProgressArea'),
+            debackProgressText: document.getElementById('debackProgressText'),
+            debackProgressPercent: document.getElementById('debackProgressPercent'),
+            debackProgressBar: document.getElementById('debackProgressBar'),
+            debackPreviewArea: document.getElementById('debackPreviewArea'),
+            debackOriginalImg: document.getElementById('debackOriginalImg'),
+            debackOriginalInfo: document.getElementById('debackOriginalInfo'),
+            debackResultCanvas: document.getElementById('debackResultCanvas'),
+            debackSpinner: document.getElementById('debackSpinner'),
+            debackFooter: document.getElementById('debackFooter'),
+            debackCompleteStatus: document.getElementById('debackCompleteStatus'),
+            debackDownloadBtn: document.getElementById('debackDownloadBtn'),
 
             darkModeToggle: document.getElementById('darkModeToggle'),
             tabConvert: document.getElementById('tabConvert'),
@@ -58,9 +66,9 @@ export class UIManager {
             addSizeToName: document.getElementById('addSizeToName'),
             customBgColor: document.getElementById('customBgColor'),
             scalingMethod: document.getElementById('scalingMethod'),
-            autoRemoveBg: document.getElementById('autoRemoveBg'),
-            compressAutoRemoveBg: document.getElementById('compressAutoRemoveBg'),
+            compressDebackBgSection: document.getElementById('compressDebackBgSection'),
             compressCustomBgColor: document.getElementById('compressCustomBgColor'),
+            compressJpegWarning: document.getElementById('compressJpegWarning'),
             compressTargetSize: document.getElementById('compressTargetSize'),
             compressSizeUnit: document.getElementById('compressSizeUnit'),
             compressMaxWidth: document.getElementById('compressMaxWidth'),
@@ -158,49 +166,10 @@ export class UIManager {
             sizeDiv.className = 'text-xs text-gray-500 dark:text-gray-400';
             sizeDiv.textContent = data.image ? `${data.image.width} × ${data.image.height}` : '載入失敗';
 
-            const debackPreview = document.createElement('div');
-            debackPreview.className = 'deback-preview hidden mt-2';
-            debackPreview.innerHTML = `
-                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">🔍 去背預覽</div>
-                <div class="aspect-square bg-white dark:bg-gray-600 rounded-lg overflow-hidden relative">
-                    <canvas class="w-full h-full"></canvas>
-                    <div class="deback-spinner hidden absolute inset-0 flex items-center justify-center bg-black/10 dark:bg-black/30 rounded-lg">
-                        <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                </div>
-            `;
-
             card.appendChild(header);
             card.appendChild(imgDiv);
             card.appendChild(sizeDiv);
-            card.appendChild(debackPreview);
             this.el.batchList.appendChild(card);
-
-            if (data.debackedImage) {
-                debackPreview.classList.remove('hidden');
-                const canvas = debackPreview.querySelector('canvas');
-                if (canvas) {
-                    const size = 120;
-                    canvas.width = size;
-                    canvas.height = size;
-                    const ctx = canvas.getContext('2d');
-                    const tileSize = 8;
-                    for (let y = 0; y < size; y += tileSize) {
-                        for (let x = 0; x < size; x += tileSize) {
-                            ctx.fillStyle = (Math.floor(x / tileSize) + Math.floor(y / tileSize)) % 2 === 0 ? '#ccc' : '#fff';
-                            ctx.fillRect(x, y, tileSize, tileSize);
-                        }
-                    }
-                    const img = data.debackedImage;
-                    const aspect = img.width / img.height;
-                    let dw, dh;
-                    if (aspect > 1) { dw = size; dh = size / aspect; }
-                    else { dw = size * aspect; dh = size; }
-                    const dx = (size - dw) / 2;
-                    const dy = (size - dh) / 2;
-                    ctx.drawImage(img, dx, dy, dw, dh);
-                }
-            }
         }
     }
 
@@ -308,7 +277,7 @@ export class UIManager {
             const ctx = canvas.getContext('2d');
             
             // 使用 ImageProcessor 繪製預覽 (使用原始設定)
-            const useDebacked = !!document.getElementById('autoRemoveBg')?.checked;
+            const useDebacked = this.el.debackToggle?.checked || false;
             const bgSetting = document.querySelector('input[name="background"]:checked')?.value || 'transparent';
             const customBg = document.getElementById('customBgColor')?.value || '#ffffff';
             const scaling = document.getElementById('scalingMethod')?.value || 'contain';
@@ -336,7 +305,7 @@ export class UIManager {
     showCompressResult(imageData, result, originalFile) {
         this.el.compressResult.classList.remove('hidden');
         
-        const bgRemovalOn = this.el.compressAutoRemoveBg?.checked || false;
+        const bgRemovalOn = this.el.debackToggle?.checked || false;
         const srcImage = (bgRemovalOn && imageData.debackedImage) ? imageData.debackedImage : imageData.image;
         this.el.compressOriginalPreview.src = srcImage ? srcImage.src : '';
         this.el.compressOriginalSize.textContent = '📄 檔案大小：' + this.formatFileSize(originalFile.size);
@@ -391,48 +360,70 @@ export class UIManager {
         this.el.statusMessage.classList.add('hidden');
     }
 
-    // ===== 去背 UI 輔助 =====
-    getBgRemovalUI(isCompress) {
-        if (isCompress) {
-            return {
-                statusContainer: this.el.compressBgRemoveStatus,
-                statusText: this.el.compressBgRemoveStatusText,
-                toggle: this.el.compressAutoRemoveBg,
-                downloadBtn: this.el.compressDownloadDebackedBtn,
-                settingsContainer: this.el.compressBgSettingsContainer
-            };
-        } else {
-            return {
-                statusContainer: this.el.bgRemoveStatus,
-                statusText: this.el.bgRemoveStatus,
-                toggle: this.el.autoRemoveBg,
-                downloadBtn: null,
-                settingsContainer: null
-            };
+    // ===== 去背面板控制 =====
+    showDebackPanel() {
+        this.el.debackPanel.classList.remove('hidden');
+    }
+
+    hideDebackPanel() {
+        this.el.debackPanel.classList.add('hidden');
+        this.el.debackProgressArea.classList.add('hidden');
+        this.el.debackPreviewArea.classList.add('hidden');
+        this.el.debackFooter.classList.add('hidden');
+        this.el.debackDownloadBtn.classList.add('hidden');
+        this.el.debackSpinner.classList.add('hidden');
+    }
+
+    updateDebackProgress(current, total, name) {
+        const pct = total > 0 ? Math.round((current / total) * 100) : 0;
+        this.el.debackProgressArea.classList.remove('hidden');
+        this.el.debackProgressBar.style.width = `${pct}%`;
+        this.el.debackProgressPercent.textContent = `${pct}%`;
+        this.el.debackProgressText.textContent = `🖼️ ${name} (${current}/${total})`;
+    }
+
+    showDebackPreview(originalSrc, originalInfo, debackedImg) {
+        this.el.debackPreviewArea.classList.remove('hidden');
+        this.el.debackOriginalImg.src = originalSrc;
+        this.el.debackOriginalInfo.textContent = originalInfo;
+        this.el.debackSpinner.classList.add('hidden');
+
+        const canvas = this.el.debackResultCanvas;
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const size = rect.width || 200;
+        canvas.width = size * 2;
+        canvas.height = size * 2;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(2, 2);
+
+        const tileSize = 8;
+        for (let y = 0; y < size; y += tileSize) {
+            for (let x = 0; x < size; x += tileSize) {
+                ctx.fillStyle = (Math.floor(x / tileSize) + Math.floor(y / tileSize)) % 2 === 0 ? '#ccc' : '#fff';
+                ctx.fillRect(x, y, tileSize, tileSize);
+            }
+        }
+
+        if (debackedImg) {
+            const aspect = debackedImg.width / debackedImg.height;
+            let dw, dh;
+            if (aspect > 1) { dw = size; dh = size / aspect; }
+            else { dw = size * aspect; dh = size; }
+            const dx = (size - dw) / 2;
+            const dy = (size - dh) / 2;
+            ctx.drawImage(debackedImg, dx, dy, dw, dh);
         }
     }
 
-    updateBgStatus(isCompress, text, showDownload = false) {
-        const ui = this.getBgRemovalUI(isCompress);
-        if (ui.statusContainer) {
-            ui.statusContainer.classList.remove('hidden');
-        }
-        if (ui.statusText) {
-            ui.statusText.textContent = text;
-        }
-        if (ui.downloadBtn) {
-            ui.downloadBtn.classList.toggle('hidden', !showDownload);
-        }
+    showDebackComplete(text, showDownload = false) {
+        this.el.debackSpinner.classList.add('hidden');
+        this.el.debackFooter.classList.remove('hidden');
+        this.el.debackCompleteStatus.textContent = text;
+        this.el.debackDownloadBtn.classList.toggle('hidden', !showDownload);
     }
 
-    hideBgStatus(isCompress) {
-        const ui = this.getBgRemovalUI(isCompress);
-        if (ui.statusContainer) {
-            ui.statusContainer.classList.add('hidden');
-        }
-        if (ui.downloadBtn) {
-            ui.downloadBtn.classList.add('hidden');
-        }
+    setDebackLoading() {
+        this.el.debackSpinner.classList.remove('hidden');
     }
 
     // ===== 工具函數 =====
