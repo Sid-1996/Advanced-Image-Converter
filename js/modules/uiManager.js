@@ -59,6 +59,7 @@ export class UIManager {
 
             darkModeToggle: document.getElementById('darkModeToggle'),
             tabConvert: document.getElementById('tabConvert'),
+            tabDeback: document.getElementById('tabDeback'),
             tabCompress: document.getElementById('tabCompress'),
 
             // 設定值
@@ -83,23 +84,30 @@ export class UIManager {
     // ===== 模式切換 =====
     switchMode(mode) {
         this.currentMode = mode;
-        const isConvert = mode === 'convert';
-        
-        // Tabs
-        this.el.tabConvert.className = isConvert 
-            ? 'mode-tab active flex-1 py-3 px-4 rounded-lg font-medium text-center'
-            : 'mode-tab flex-1 py-3 px-4 rounded-lg font-medium text-center';
-        this.el.tabCompress.className = !isConvert
-            ? 'mode-tab active flex-1 py-3 px-4 rounded-lg font-medium text-center'
-            : 'mode-tab flex-1 py-3 px-4 rounded-lg font-medium text-center';
+
+        // Tabs (三個分頁)
+        const setTab = (el, active) => {
+            el.className = active
+                ? 'mode-tab active flex-1 py-3 px-4 rounded-lg font-medium text-center'
+                : 'mode-tab flex-1 py-3 px-4 rounded-lg font-medium text-center';
+        };
+        setTab(this.el.tabConvert, mode === 'convert');
+        setTab(this.el.tabDeback, mode === 'deback');
+        setTab(this.el.tabCompress, mode === 'compress');
 
         // Upload zone text
-        if (isConvert) {
+        if (mode === 'convert') {
             this.el.uploadIcon.textContent = '📁';
             this.el.uploadTitle.textContent = '上傳圖片轉換／去背';
             this.el.uploadDesc.textContent = '支援 PNG、JPG、WebP • 批次轉換多個檔案';
             this.el.uploadHint.textContent = '🎨 開啟「自動去背」可 AI 移除背景再轉換';
             this.el.uploadBtn.textContent = '選擇圖片';
+        } else if (mode === 'deback') {
+            this.el.uploadIcon.textContent = '🎨';
+            this.el.uploadTitle.textContent = '上傳圖片進行 AI 去背';
+            this.el.uploadDesc.textContent = '支援 PNG、JPG、WebP • 自動移除圖片背景';
+            this.el.uploadHint.textContent = '🎨 完全在瀏覽器執行，圖片不上傳伺服器';
+            this.el.uploadBtn.textContent = '選擇圖片去背';
         } else {
             this.el.uploadIcon.textContent = '📦';
             this.el.uploadTitle.textContent = '上傳圖片壓縮大小';
@@ -109,15 +117,18 @@ export class UIManager {
         }
 
         // Panels
-        this.el.compressSettings.classList.toggle('hidden', isConvert);
+        this.el.compressSettings.classList.add('hidden');
         this.el.compressResult.classList.add('hidden');
-        if (isConvert) {
-            // 轉換模式下，批次區、設定、下載區由外部控制顯示
-        } else {
-            this.el.batchSection.classList.add('hidden');
-            this.el.settingsPanel.classList.add('hidden');
-            this.el.downloadSection.classList.add('hidden');
-            this.el.progressSection.classList.add('hidden');
+        this.el.settingsPanel.classList.add('hidden');
+        this.el.downloadSection.classList.add('hidden');
+        this.el.progressSection.classList.add('hidden');
+        this.el.batchSection.classList.add('hidden');
+        this.el.compressDebackBgSection?.classList.add('hidden');
+
+        if (mode === 'convert') {
+            // 批次區、設定、下載區由外部控制顯示
+        } else if (mode === 'deback') {
+            // 去背模式：批次區由外部控制，僅確保批次區顯示
         }
     }
 

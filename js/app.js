@@ -87,6 +87,7 @@ class App {
 
         // ---- 模式切換 ----
         ui.el.tabConvert.addEventListener('click', () => this.switchMode('convert'));
+        ui.el.tabDeback.addEventListener('click', () => this.switchMode('deback'));
         ui.el.tabCompress.addEventListener('click', () => this.switchMode('compress'));
 
         // ---- 轉換按鈕 ----
@@ -208,8 +209,15 @@ class App {
         // 更新 UI
         this.updateUIAfterFileChange();
 
-        // 自動執行去背 (若開關已開啟)
-        if (this.ui.el.debackToggle?.checked) {
+        const isDebackMode = this.ui.currentMode === 'deback';
+        const isCompress = this.ui.currentMode === 'compress';
+
+        // 去背模式自動執行去背
+        if (isDebackMode || this.ui.el.debackToggle?.checked) {
+            if (isDebackMode) {
+                this.ui.el.debackToggle.checked = true;
+                this.ui.showDebackPanel();
+            }
             await this.startBatchDebacking();
         }
 
@@ -232,6 +240,7 @@ class App {
         if (this.fileHandler.getCount() === 0) {
             this.ui.hideDownloadSection();
             this.ui.hideCompressResult();
+            this.ui.hideDebackPanel();
             this.ui.hideStatus();
         }
         trackEvent('image_removed');
@@ -254,9 +263,14 @@ class App {
     updateUIAfterFileChange() {
         this.ui.updateImageDisplay(this.fileHandler.images);
         const count = this.fileHandler.getCount();
-        if (count > 0 && this.ui.currentMode === 'convert') {
-            this.ui.el.settingsPanel.classList.remove('hidden');
-        } else if (count === 0) {
+        const mode = this.ui.currentMode;
+        if (count > 0) {
+            if (mode === 'convert') {
+                this.ui.el.settingsPanel.classList.remove('hidden');
+            } else if (mode === 'deback') {
+                this.ui.el.batchSection.classList.remove('hidden');
+            }
+        } else {
             this.ui.el.settingsPanel.classList.add('hidden');
         }
         // 若轉換結果存在但圖片被清空，隱藏下載區
@@ -271,7 +285,6 @@ class App {
         const count = this.fileHandler.getCount();
         
         if (mode === 'convert') {
-            this.ui.el.compressDebackBgSection?.classList.add('hidden');
             if (count > 0) {
                 this.ui.el.settingsPanel.classList.remove('hidden');
                 this.ui.updateImageDisplay(this.fileHandler.images);
@@ -280,13 +293,17 @@ class App {
                     this.generateDownloadUI();
                 }
             }
-            this.ui.el.compressResult.classList.add('hidden');
+        } else if (mode === 'deback') {
+            if (count > 0) {
+                this.ui.el.batchSection.classList.remove('hidden');
+                this.ui.updateImageDisplay(this.fileHandler.images);
+                this.ui.el.debackToggle.checked = true;
+                this.ui.showDebackPanel();
+                this.startBatchDebacking();
+            }
         } else {
             // 壓縮模式
-            this.ui.el.settingsPanel.classList.add('hidden');
-            this.ui.el.downloadSection.classList.add('hidden');
-            this.ui.el.progressSection.classList.add('hidden');
-            this.ui.el.batchSection.classList.add('hidden'); // 壓縮模式不顯示批次列表
+            this.ui.el.batchSection.classList.add('hidden');
             if (this.ui.el.debackToggle?.checked) {
                 this.ui.el.compressDebackBgSection?.classList.remove('hidden');
             }
