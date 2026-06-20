@@ -175,6 +175,32 @@ export class UIManager {
             card.appendChild(sizeDiv);
             card.appendChild(debackPreview);
             this.el.batchList.appendChild(card);
+
+            if (data.debackedImage) {
+                debackPreview.classList.remove('hidden');
+                const canvas = debackPreview.querySelector('canvas');
+                if (canvas) {
+                    const size = 120;
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    const tileSize = 8;
+                    for (let y = 0; y < size; y += tileSize) {
+                        for (let x = 0; x < size; x += tileSize) {
+                            ctx.fillStyle = (Math.floor(x / tileSize) + Math.floor(y / tileSize)) % 2 === 0 ? '#ccc' : '#fff';
+                            ctx.fillRect(x, y, tileSize, tileSize);
+                        }
+                    }
+                    const img = data.debackedImage;
+                    const aspect = img.width / img.height;
+                    let dw, dh;
+                    if (aspect > 1) { dw = size; dh = size / aspect; }
+                    else { dw = size * aspect; dh = size; }
+                    const dx = (size - dw) / 2;
+                    const dy = (size - dh) / 2;
+                    ctx.drawImage(img, dx, dy, dw, dh);
+                }
+            }
         }
     }
 

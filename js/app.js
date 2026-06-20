@@ -605,9 +605,6 @@ class App {
             }
 
             ui.updateBgStatus(isCompress, `✅ 去背完成 (${processed}/${entries.length})`, processed > 0);
-            
-            // 更新 UI 列表 (顯示去背預覽)
-            this.ui.updateImageDisplay(this.fileHandler.images);
 
         } catch (err) {
             console.error('Batch deback error:', err);
